@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
-import { like, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import consola from "consola";
 
 const globalThis_ = globalThis as typeof globalThis & {
 	db: ReturnType<typeof drizzle>;
@@ -8,9 +9,10 @@ const globalThis_ = globalThis as typeof globalThis & {
 
 const db = (() => {
 	if (!globalThis_.db) {
+		consola.log("db connection created");
 		globalThis_.db = drizzle({
 			connection: process.env.DATABASE_URL || "postgres://localhost:5432",
-      schema: schema,
+			schema: schema,
 		});
 	}
 	return globalThis_.db;

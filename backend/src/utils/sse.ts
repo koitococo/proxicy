@@ -17,8 +17,7 @@ export async function* parseSse(
       if (line.startsWith("data: ")) {
         // simplified logic for OpenAI API, which always return 'data' event
         const data = line.slice(6).trim();
-        const chunk = JSON.parse(data);
-        yield chunk;
+        yield data;
       }
     }
   }

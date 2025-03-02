@@ -1,12 +1,10 @@
 import { Elysia, t } from "elysia";
-import type {
-	ChatCompletionChunk,
-	ChatCompletion,
-} from "openai/resources";
+import type { ChatCompletionChunk, ChatCompletion } from "openai/resources";
 
 import { apiKeyPlugin } from "../plugins/apiKeyPlugin";
 import { addCompletions } from "../utils/completions";
 import { parseSse } from "../utils/sse";
+import consola from "consola";
 
 // very basic validation for only top level fields
 export const tChatCompletionCreate = t.Object({
@@ -77,17 +75,18 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
 			}
 
 			case true: {
-				// always set include_usage to true
 				if (!!body.n && body.n > 1) {
 					return error(400, "Stream completions with n > 1 is not supported");
 				}
+
+				// always set include_usage to true
 				body.stream_options = {
 					include_usage: true,
 				};
-
 				const resp = await fetch(upstreamEndpoint, {
 					method: "POST",
 					headers: {
+						Authorization: upstreamAuth,
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify(body),
@@ -96,19 +95,20 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
 				if (!resp.ok) return error(resp.status, await resp.text());
 				if (!resp.body) return error(500, "No body");
 
-				const chunks = parseSse(resp.body);
+				const chunks: AsyncGenerator<string> = parseSse(resp.body);
 
 				const partials = [];
 				for await (const chunk of chunks) {
-					if (chunk.choices.length === 1) {
-						const content = chunk.choices[0].delta.content ?? "";
+					const data = JSON.parse(chunk) as ChatCompletionChunk;
+					if (data.choices.length === 1) {
+						const content = data.choices[0].delta.content ?? "";
 						partials.push(content);
-					} else if (chunk.choices.length === 0) {
+					} else if (data.choices.length === 0) {
 						// Assuse that is the last chunk
-						const usage = chunk.usage ?? undefined;
+						const usage = data.usage ?? undefined;
 						const full = partials.join("");
 						const c = {
-							model: chunk.model,
+							model: data.model,
 							prompt: {
 								messages: cleanedMessages,
 								n: body.n,
@@ -122,11 +122,11 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
 					} else {
 						return error(500, "Unexpected chunk");
 					}
-					yield chunk;
+					yield `data: ${chunk}\n\n`;
 				}
 				for await (const chunk of chunks) {
 					// Continue to yield the rest of the chunks if needed
-					yield chunk;
+					yield `data: ${chunk}\n\n`;
 				}
 			}
 		}

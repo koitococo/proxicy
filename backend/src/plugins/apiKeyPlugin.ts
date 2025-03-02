@@ -13,7 +13,7 @@ export const apiKeyPlugin = new Elysia({ name: "apiKeyPlugin" })
 	})
 	.macro({
 		checkApiKey: {
-			async beforeHandle({ headers, error, userKey }) {
+			async beforeHandle({ error, userKey }) {
 				if (!userKey || !(await checkApiKey(userKey))) return error(401, "Invalid API key");
 			},
 		},

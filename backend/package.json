@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@elysiajs/opentelemetry": "^1.2.0",
+    "consola": "^3.4.0",
     "drizzle-orm": "^0.40.0",
     "elysia": "^1.2.23",
     "openai": "^4.86.1"
