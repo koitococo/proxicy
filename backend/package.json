@@ -1,0 +1,20 @@
+{
+  "name": "proxicy-ts",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "^1.2.4",
+    "drizzle-kit": "^0.30.5",
+    "pg": "^8.13.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@elysiajs/opentelemetry": "^1.2.0",
+    "drizzle-orm": "^0.40.0",
+    "elysia": "^1.2.23",
+    "openai": "^4.86.1"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "proxicy",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}
