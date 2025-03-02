@@ -1,5 +1,7 @@
 import { Elysia } from "elysia";
-import { completionApi } from "./completion";
+import { completionsApi } from "./completions";
 
 export const routes = new Elysia()
-  .use(completionApi);
+  .group("/v1", (app) => {
+    return app.use(completionsApi);
+  })
