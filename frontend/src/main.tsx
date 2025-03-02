@@ -7,6 +7,8 @@ import { routeTree } from './routeTree.gen'
 
 import './styles.css'
 
+import { QueryProvider } from '@/components/app/query-provider'
+
 import reportWebVitals from './reportWebVitals'
 
 // Create a new router instance
@@ -30,7 +32,9 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <QueryProvider>
+        <RouterProvider router={router} />
+      </QueryProvider>
     </StrictMode>,
   )
 }

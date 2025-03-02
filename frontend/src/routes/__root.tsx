@@ -7,7 +7,11 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
 
 export const Route = createRootRoute({
-  component: () => (
+  component: Root,
+})
+
+function Root() {
+  return (
     <ThemeProvider storageKey="ui-theme" attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <SidebarProvider>
         <AppSidebar />
@@ -18,5 +22,5 @@ export const Route = createRootRoute({
         <TanStackRouterDevtools position="bottom-right" />
       </SidebarProvider>
     </ThemeProvider>
-  ),
-})
+  )
+}
