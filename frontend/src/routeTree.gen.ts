@@ -11,12 +11,26 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
+import { Route as LogsIndexImport } from './routes/logs/index'
+import { Route as ApiKeysIndexImport } from './routes/api-keys/index'
+import { Route as DashboardIndexImport } from './routes/_dashboard/index'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
-  id: '/',
+const LogsIndexRoute = LogsIndexImport.update({
+  id: '/logs/',
+  path: '/logs/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ApiKeysIndexRoute = ApiKeysIndexImport.update({
+  id: '/api-keys/',
+  path: '/api-keys/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardIndexRoute = DashboardIndexImport.update({
+  id: '/_dashboard/',
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
@@ -25,11 +39,25 @@ const IndexRoute = IndexImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_dashboard/': {
+      id: '/_dashboard/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+      preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/api-keys/': {
+      id: '/api-keys/'
+      path: '/api-keys'
+      fullPath: '/api-keys'
+      preLoaderRoute: typeof ApiKeysIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/logs/': {
+      id: '/logs/'
+      path: '/logs'
+      fullPath: '/logs'
+      preLoaderRoute: typeof LogsIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -38,33 +66,43 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof DashboardIndexRoute
+  '/api-keys': typeof ApiKeysIndexRoute
+  '/logs': typeof LogsIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof DashboardIndexRoute
+  '/api-keys': typeof ApiKeysIndexRoute
+  '/logs': typeof LogsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
+  '/_dashboard/': typeof DashboardIndexRoute
+  '/api-keys/': typeof ApiKeysIndexRoute
+  '/logs/': typeof LogsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api-keys' | '/logs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api-keys' | '/logs'
+  id: '__root__' | '/_dashboard/' | '/api-keys/' | '/logs/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  ApiKeysIndexRoute: typeof ApiKeysIndexRoute
+  LogsIndexRoute: typeof LogsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+  ApiKeysIndexRoute: ApiKeysIndexRoute,
+  LogsIndexRoute: LogsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +115,19 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/_dashboard/",
+        "/api-keys/",
+        "/logs/"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/_dashboard/": {
+      "filePath": "_dashboard/index.tsx"
+    },
+    "/api-keys/": {
+      "filePath": "api-keys/index.tsx"
+    },
+    "/logs/": {
+      "filePath": "logs/index.tsx"
     }
   }
 }
