@@ -1,12 +1,12 @@
 import { Elysia, t } from "elysia";
 import type {
-	ChatCompletionCreateParams,
 	ChatCompletionChunk,
 	ChatCompletion,
 } from "openai/resources";
 
 import { apiKeyPlugin } from "../plugins/apiKeyPlugin";
 import { addCompletions } from "../utils/completions";
+import { parseSse } from "../utils/sse";
 
 // very basic validation for only top level fields
 export const tChatCompletionCreate = t.Object({
@@ -28,13 +28,20 @@ export const tChatCompletionCreate = t.Object({
 	top_p: t.Optional(t.Number()),
 });
 
-export const completionApi = new Elysia().use(apiKeyPlugin).post(
-	"/completion",
+export const completionsApi = new Elysia().use(apiKeyPlugin).post(
+	"/chat/completions",
 	async function* ({ body, error, userKey }) {
-		const upstreamEndpoint = process.env.UPSTREAM_API || "";
+		const upstreamEndpoint = `${process.env.UPSTREAM_API}/chat/completions`;
 		const upstreamAuth = `Bearer ${process.env.UPSTREAM_API_KEY}`;
 
-		switch (body.stream) {
+		const cleanedMessages = body.messages.map((u) => {
+			const m = u as { role: string; content: string };
+			return {
+				role: m.role as string,
+				content: m.content as string,
+			};
+		});
+		switch (!!body.stream) {
 			case false: {
 				const resp = await fetch(upstreamEndpoint, {
 					method: "POST",
@@ -48,14 +55,6 @@ export const completionApi = new Elysia().use(apiKeyPlugin).post(
 				if (!resp.ok) return error(resp.status, await resp.text());
 				const respText = await resp.text();
 				const respJson = JSON.parse(respText) as ChatCompletion;
-
-				const cleanedMessages = body.messages.map((u) => {
-					const m = u as { role: string; content: string };
-					return {
-						role: m.role as string,
-						content: m.content as string,
-					};
-				});
 
 				addCompletions(
 					{
@@ -97,22 +96,40 @@ export const completionApi = new Elysia().use(apiKeyPlugin).post(
 				if (!resp.ok) return error(resp.status, await resp.text());
 				if (!resp.body) return error(500, "No body");
 
-				const reader = resp.body.getReader();
-				while (true) {
-					const { value, done } = await reader.read();
-					if (done) break;
+				const chunks = parseSse(resp.body);
 
-					const chunk: ChatCompletionChunk = JSON.parse(
-						new TextDecoder().decode(value),
-					);
-					// TODO: do something with chunk here
-					// TODO: if usage is not null, store usage
-
-					yield value;
+				const partials = [];
+				for await (const chunk of chunks) {
+					if (chunk.choices.length === 1) {
+						const content = chunk.choices[0].delta.content ?? "";
+						partials.push(content);
+					} else if (chunk.choices.length === 0) {
+						// Assuse that is the last chunk
+						const usage = chunk.usage ?? undefined;
+						const full = partials.join("");
+						const c = {
+							model: chunk.model,
+							prompt: {
+								messages: cleanedMessages,
+								n: body.n,
+							},
+							prompt_tokens: usage?.prompt_tokens ?? -1,
+							completion: [{ role: undefined, content: full }], // Stream API does not provide role
+							completion_tokens: usage?.completion_tokens ?? -1,
+						};
+						addCompletions(c, userKey);
+						break;
+					} else {
+						return error(500, "Unexpected chunk");
+					}
+					yield chunk;
+				}
+				for await (const chunk of chunks) {
+					// Continue to yield the rest of the chunks if needed
+					yield chunk;
 				}
 			}
 		}
-		// TODO:
 	},
 	{
 		body: tChatCompletionCreate,

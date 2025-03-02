@@ -3,8 +3,8 @@ import { checkApiKey } from "../utils/apiKey";
 
 export const apiKeyPlugin = new Elysia({ name: "apiKeyPlugin" })
 	.derive({ as: "global" }, ({ headers }) => {
-		if (!headers.Authorization) return;
-		const [method, key] = headers.Authorization.split(" ");
+		if (!headers.authorization) return;
+		const [method, key] = headers.authorization.split(" ");
 		if (method !== "Bearer") return;
 
 		return {

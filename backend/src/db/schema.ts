@@ -33,7 +33,7 @@ export type CompletionsPromptType = {
 }
 
 export type CompletionsCompletionType = {
-	role: string;
+	role?: string; // null in stream api
 	content?: string;
 }[]
 

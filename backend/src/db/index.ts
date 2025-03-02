@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
-import { like } from "drizzle-orm";
+import { like, eq } from "drizzle-orm";
 
 const globalThis_ = globalThis as typeof globalThis & {
 	db: ReturnType<typeof drizzle>;
@@ -25,7 +25,7 @@ export async function findApiKey(key: string): Promise<ApiKey | null> {
 	const r = await db
 		.select()
 		.from(schema.ApiKeysTable)
-		.where(like(schema.ApiKeysTable.key, key));
+		.where(eq(schema.ApiKeysTable.key, key));
 	return r.length === 1 ? r[0] : null;
 }
 
