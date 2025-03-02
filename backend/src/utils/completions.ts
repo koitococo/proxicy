@@ -1,5 +1,8 @@
 import { findApiKey, insertCompletion } from "../db";
-import type { CompletionsCompletionType, CompletionsPromptType } from "../db/schema";
+import type {
+  CompletionsCompletionType,
+  CompletionsPromptType,
+} from "../db/schema";
 
 /**
  * add a new completion to the database
@@ -8,19 +11,19 @@ import type { CompletionsCompletionType, CompletionsPromptType } from "../db/sch
  * @returns the new completion
  */
 export async function addCompletions(
-	c: {
-		model: string;
-		prompt: CompletionsPromptType;
-		prompt_tokens: number;
-		completion: CompletionsCompletionType;
-		completion_tokens: number;
-	},
-	apiKey?: string,
+  c: {
+    model: string;
+    prompt: CompletionsPromptType;
+    prompt_tokens: number;
+    completion: CompletionsCompletionType;
+    completion_tokens: number;
+  },
+  apiKey?: string,
 ) {
-	const keyId =
-		apiKey === undefined ? -1 : ((await findApiKey(apiKey))?.id ?? -1);
-	return await insertCompletion({
-		apiKeyId: keyId,
-		...c,
-	});
+  const keyId =
+    apiKey === undefined ? -1 : ((await findApiKey(apiKey))?.id ?? -1);
+  return await insertCompletion({
+    apiKeyId: keyId,
+    ...c,
+  });
 }

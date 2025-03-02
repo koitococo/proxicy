@@ -7,12 +7,12 @@ import * as crypto from "node:crypto";
  * @returns true if the key is valid
  */
 export async function checkApiKey(key: string): Promise<boolean> {
-	const r = await findApiKey(key);
-	return (
-		r !== null &&
-		!r.revoked &&
-		(r.expires_at === null || r.expires_at > new Date())
-	);
+  const r = await findApiKey(key);
+  return (
+    r !== null &&
+    !r.revoked &&
+    (r.expires_at === null || r.expires_at > new Date())
+  );
 }
 
 /**
@@ -20,9 +20,9 @@ export async function checkApiKey(key: string): Promise<boolean> {
  * @returns a new API key
  */
 function generateApiKey() {
-	const buf = crypto.randomBytes(16);
+  const buf = crypto.randomBytes(16);
 
-	return `sk-${Array.from(buf, (v) => v.toString(16).padStart(2, "0")).join("")}`;
+  return `sk-${Array.from(buf, (v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
 
 /**
@@ -33,16 +33,16 @@ function generateApiKey() {
  * @returns record of the new key
  */
 export async function newApiKey(
-	key: string,
-	expires_at?: Date,
-	comment?: string,
+  key: string,
+  expires_at?: Date,
+  comment?: string,
 ) {
-	const r = await upsertApiKey({
-		key,
-		comment,
-		expires_at,
-	});
-	return r;
+  const r = await upsertApiKey({
+    key,
+    comment,
+    expires_at,
+  });
+  return r;
 }
 
 /**
@@ -52,10 +52,10 @@ export async function newApiKey(
  * @returns record of the revoked key
  */
 export async function revokeApiKey(key: string) {
-	const r = await upsertApiKey({
-		key,
-		revoked: true,
-		updated_at: new Date(),
-	});
-	return r;
+  const r = await upsertApiKey({
+    key,
+    revoked: true,
+    updated_at: new Date(),
+  });
+  return r;
 }

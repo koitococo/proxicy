@@ -5,8 +5,4 @@ import { loggerPlugin } from "./plugins/loggerPlugin";
 
 const port = process.env.PORT || 3000;
 
-new Elysia()
-  .use(loggerPlugin)
-	.use(opentelemetry())
-	.use(routes)
-	.listen(port);
+new Elysia().use(loggerPlugin).use(opentelemetry()).use(routes).listen(port);
