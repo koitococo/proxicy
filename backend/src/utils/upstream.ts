@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { UPSTREAMS_FILE } from "./config";
 
 export type Upstream = {
   supportedModels: string[]; // list of models supported by this upstream
@@ -32,5 +33,5 @@ export function selectUpstream(upstreams: Upstream[], model: string) {
 }
 
 export const upstreams: Upstream[] = JSON.parse(
-  readFileSync(process.env.UPSTREAMS_FILE || "upstreams.json", "utf-8"),
+  readFileSync(UPSTREAMS_FILE || "upstreams.json", "utf-8"),
 );

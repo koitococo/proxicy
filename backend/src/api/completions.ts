@@ -31,7 +31,7 @@ export const tChatCompletionCreate = t.Object({
 
 export const completionsApi = new Elysia().use(apiKeyPlugin).post(
   "/chat/completions",
-  async function* ({ body, error, userKey }) {
+  async function* ({ body, error, bearer }) {
     const upstream = selectUpstream(upstreams, body.model);
     if (!upstream) {
       return error(404, "Model not found");
@@ -62,7 +62,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
     switch (!!body.stream) {
       case false: {
         logger.log("proxying completions request to upstream", {
-          userKey,
+          bearer,
           upstreamEndpoint,
         });
         const resp = await fetch(upstreamEndpoint, reqInit);
@@ -93,7 +93,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
             })),
             completion_tokens: respJson.usage?.completion_tokens ?? -1,
           },
-          userKey,
+          bearer,
         );
 
         return respText;
@@ -108,8 +108,9 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
         body.stream_options = {
           include_usage: true,
         };
+
         logger.log("proxying stream completions request to upstream", {
-          userKey,
+          userKey: bearer,
           upstreamEndpoint,
           stream: true,
         });
@@ -154,7 +155,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
               completion: [{ role: undefined, content: full }], // Stream API does not provide role
               completion_tokens: usage?.completion_tokens ?? -1,
             };
-            addCompletions(c, userKey);
+            addCompletions(c, bearer);
             break;
           } else {
             return error(500, "Unexpected chunk");
