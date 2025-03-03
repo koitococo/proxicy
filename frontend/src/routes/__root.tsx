@@ -3,6 +3,7 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { ThemeProvider } from 'next-themes'
 
 import { AppSidebar } from '@/components/app/app-sidebar'
+import { AuthDialog } from '@/components/app/auth-dialog'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -17,6 +18,7 @@ function Root() {
         <AppSidebar />
         <SidebarInset>
           <Outlet />
+          <AuthDialog />
         </SidebarInset>
         <Toaster />
         <TanStackRouterDevtools position="bottom-right" />
