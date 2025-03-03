@@ -79,7 +79,10 @@ export async function insertCompletion(
  * @param apiKeyId key id, referencing to id colume in api keys table
  * @returns total prompt tokens and completion tokens used by the api key
  */
-export async function sumCompletionTokenUsage(apiKeyId?: number, model?:string) {
+export async function sumCompletionTokenUsage(
+  apiKeyId?: number,
+  model?: string,
+) {
   logger.log("sumCompletionTokenUsage", apiKeyId);
   const r = await db
     .select({
@@ -87,9 +90,15 @@ export async function sumCompletionTokenUsage(apiKeyId?: number, model?:string) 
       total_completion_tokens: sum(schema.CompletionsTable.completion_tokens),
     })
     .from(schema.CompletionsTable)
-    .where(and(
-      apiKeyId !== undefined ? eq(schema.CompletionsTable.apiKeyId, apiKeyId) : undefined,
-      model !== undefined ? eq(schema.CompletionsTable.model, model) : undefined
-    ))
+    .where(
+      and(
+        apiKeyId !== undefined
+          ? eq(schema.CompletionsTable.apiKeyId, apiKeyId)
+          : undefined,
+        model !== undefined
+          ? eq(schema.CompletionsTable.model, model)
+          : undefined,
+      ),
+    );
   return r.length === 1 ? r[0] : null;
 }

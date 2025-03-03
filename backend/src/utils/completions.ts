@@ -29,9 +29,7 @@ export async function addCompletions(
   });
 }
 
-export async function queryUsage(
-  apiKey: string,
-) {
+export async function queryUsage(apiKey: string) {
   const key = await findApiKey(apiKey);
   if (key === null) {
     return null;

@@ -8,14 +8,14 @@ const logger = consola.withTag("usageQuery");
 
 export const usageQuery = new Elysia().use(apiKeyPlugin).get(
   "/chat/completions",
-  async function* ({ body, error, userKey }) { 
+  async function* ({ body, error, userKey }) {
     if (userKey === undefined) {
-      return error(400,"missing user key");
+      return error(400, "missing user key");
     }
+    logger.log("queryUsage", userKey);
     yield JSON.stringify(queryUsage(userKey));
   },
-    {
-      checkApiKey: true,
-    },
-  );
-  
+  {
+    checkApiKey: true,
+  },
+);

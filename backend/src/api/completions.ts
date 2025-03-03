@@ -5,6 +5,7 @@ import { apiKeyPlugin } from "../plugins/apiKeyPlugin";
 import { addCompletions } from "../utils/completions";
 import { parseSse } from "../utils/sse";
 import { consola } from "consola";
+import { selectUpstream, upstreams } from "@/utils/upstream";
 
 const logger = consola.withTag("completionsApi");
 
@@ -31,9 +32,15 @@ export const tChatCompletionCreate = t.Object({
 export const completionsApi = new Elysia().use(apiKeyPlugin).post(
   "/chat/completions",
   async function* ({ body, error, userKey }) {
-    const upstream = "default"; // TODO: dynamically select upstream
-    const upstreamEndpoint = `${process.env.UPSTREAM_API}/chat/completions`;
-    const upstreamAuth = `Bearer ${process.env.UPSTREAM_API_KEY}`;
+    const upstream = selectUpstream(upstreams, body.model);
+    if (!upstream) {
+      return error(404, "Model not found");
+    }
+    const upstreamName = upstream.name;
+    const upstreamEndpoint = `${upstream.endPoint}/chat/completions`;
+    const upstreamAuth = upstream.apiKey
+      ? `Bearer ${upstream.apiKey}`
+      : undefined;
 
     const cleanedMessages = body.messages.map((u) => {
       const m = u as { role: string; content: string };
@@ -42,20 +49,23 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
         content: m.content as string,
       };
     });
+
+    const reqInit: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(upstreamAuth ? { Authorization: upstreamAuth } : {}),
+      },
+      body: JSON.stringify(body),
+    };
+
     switch (!!body.stream) {
       case false: {
         logger.log("proxying completions request to upstream", {
           userKey,
           upstreamEndpoint,
         });
-        const resp = await fetch(upstreamEndpoint, {
-          method: "POST",
-          headers: {
-            Authorization: upstreamAuth,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        });
+        const resp = await fetch(upstreamEndpoint, reqInit);
 
         if (!resp.ok) {
           const msg = await resp.text();
@@ -71,7 +81,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
         addCompletions(
           {
             model: body.model,
-            upstream,
+            upstream: upstreamName,
             prompt: {
               messages: cleanedMessages,
               n: body.n,
@@ -103,14 +113,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
           upstreamEndpoint,
           stream: true,
         });
-        const resp = await fetch(upstreamEndpoint, {
-          method: "POST",
-          headers: {
-            Authorization: upstreamAuth,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        });
+        const resp = await fetch(upstreamEndpoint, reqInit);
 
         if (!resp.ok) {
           const msg = await resp.text();
@@ -142,7 +145,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
             const full = partials.join("");
             const c = {
               model: data.model,
-              upstream,
+              upstream: upstreamName,
               prompt: {
                 messages: cleanedMessages,
                 n: body.n,
