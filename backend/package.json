@@ -29,6 +29,7 @@
     "test": "bun test",
     "format": "biome format --write",
     "check": "biome check --write",
-    "orm:push": "bunx drizzle-kit push"
+    "orm:push": "bunx drizzle-kit push",
+    "orm:studio": "bunx drizzle-kit studio"
   }
 }
