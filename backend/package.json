@@ -24,6 +24,7 @@
   "scripts": {
     "start": "bun src/index.ts",
     "format": "biome format --write",
-    "check": "biome check --write"
+    "check": "biome check --write",
+    "orm:push": "bunx drizzle-kit push"
   }
 }
