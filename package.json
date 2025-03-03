@@ -4,5 +4,9 @@
   "workspaces": [
     "backend",
     "frontend"
+  ],
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "protobufjs"
   ]
 }

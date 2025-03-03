@@ -5,6 +5,7 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@types/bun": "^1.2.4",
     "drizzle-kit": "^0.30.5",
     "pg": "^8.13.3"
@@ -14,9 +15,15 @@
   },
   "dependencies": {
     "@elysiajs/opentelemetry": "^1.2.0",
+    "@elysiajs/swagger": "^1.2.2",
     "consola": "^3.4.0",
     "drizzle-orm": "^0.40.0",
     "elysia": "^1.2.23",
     "openai": "^4.86.1"
+  },
+  "scripts": {
+    "start": "bun src/index.ts",
+    "format": "biome format --write",
+    "check": "biome check --write"
   }
 }

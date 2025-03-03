@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { swagger } from "@elysiajs/swagger";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import { routes } from "@/api";
 import { loggerPlugin } from "@/plugins/loggerPlugin";
@@ -7,6 +8,7 @@ const port = process.env.PORT || 3000;
 
 const app = new Elysia()
   .use(loggerPlugin)
+  .use(swagger())
   .use(opentelemetry())
   .use(routes)
   .listen(port);
