@@ -1,5 +1,15 @@
 import { relations } from "drizzle-orm";
-import { boolean, integer, jsonb, pgEnum, pgTable, timestamp, varchar, type AnyPgColumn } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  real,
+  timestamp,
+  varchar,
+  type AnyPgColumn,
+} from "drizzle-orm/pg-core";
 
 export const ApiKeysTable = pgTable("api_keys", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -13,6 +23,26 @@ export const ApiKeysTable = pgTable("api_keys", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
   expires_at: timestamp("expires_at"),
   revoked: boolean("revoked").notNull().default(false),
+});
+
+export const UpstreamTable = pgTable("upstreams", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar("name", {
+    length: 63,
+  }).notNull(),
+  url: varchar("url", {
+    length: 255,
+  }).notNull(),
+  model: varchar("model", {
+    length: 63,
+  }).notNull(),
+  apiKey: varchar("apiKey", {
+    length: 255,
+  }),
+  comment: varchar("comment"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+  deleted: boolean("revoked").notNull().default(false),
 });
 
 export type CompletionsPromptType = {
@@ -40,8 +70,8 @@ export const CompletionsTable = pgTable("completions", {
   apiKeyId: integer("apiKeyId")
     .notNull()
     .references((): AnyPgColumn => ApiKeysTable.id),
+  upstreamId: integer("upstreamId").references((): AnyPgColumn => UpstreamTable.id),
   model: varchar("model").notNull(),
-  upstream: varchar("upstream").notNull(),
   prompt: jsonb("prompt").notNull().$type<CompletionsPromptType>(),
   prompt_tokens: integer("prompt_tokens").notNull(),
   completion: jsonb("completion").notNull().$type<CompletionsCompletionType>(),
@@ -52,6 +82,7 @@ export const CompletionsTable = pgTable("completions", {
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
   deleted: boolean("deleted").notNull().default(false),
+  rating: real("rating"),
 });
 
 export const CompletionsTableRelations = relations(CompletionsTable, ({ one }) => {
@@ -63,6 +94,10 @@ export const CompletionsTableRelations = relations(CompletionsTable, ({ one }) =
     apiKeyId: one(ApiKeysTable, {
       fields: [CompletionsTable.apiKeyId],
       references: [ApiKeysTable.id],
+    }),
+    upstreamId: one(UpstreamTable, {
+      fields: [CompletionsTable.upstreamId],
+      references: [UpstreamTable.id],
     }),
   };
 });

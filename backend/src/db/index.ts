@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
-import { and, eq, sum } from "drizzle-orm";
+import { and, eq, not, sum } from "drizzle-orm";
 import consola from "consola";
 
 const globalThis_ = globalThis as typeof globalThis & {
@@ -22,6 +22,8 @@ const db = (() => {
 
 export type ApiKey = typeof schema.ApiKeysTable.$inferSelect;
 export type ApiKeyInsert = typeof schema.ApiKeysTable.$inferInsert;
+export type Upstream = typeof schema.UpstreamTable.$inferSelect;
+export type UpstreamInsert = typeof schema.UpstreamTable.$inferInsert;
 export type Completion = typeof schema.CompletionsTable.$inferSelect;
 export type CompletionInsert = typeof schema.CompletionsTable.$inferInsert;
 
@@ -52,6 +54,26 @@ export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
     })
     .returning();
   return r.length === 1 ? r[0] : null;
+}
+
+/**
+ * find upstream in database
+ * @param model model name
+ * @param upstream upstream name
+ * @returns db records of upstream, null if not found
+ */
+export async function findUpstreams(model: string, upstream?: string): Promise<Upstream[]> {
+  const r = await db
+    .select()
+    .from(schema.UpstreamTable)
+    .where(
+      and(
+        eq(schema.UpstreamTable.model, model),
+        upstream !== undefined ? eq(schema.UpstreamTable.name, upstream) : undefined,
+        not(schema.UpstreamTable.deleted),
+      ),
+    );
+  return r;
 }
 
 /**

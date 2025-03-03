@@ -5,7 +5,7 @@ import { apiKeyPlugin } from "../plugins/apiKeyPlugin";
 import { addCompletions } from "../utils/completions";
 import { parseSse } from "../utils/sse";
 import { consola } from "consola";
-import { selectUpstream, upstreams } from "@/utils/upstream";
+import { selectUpstream } from "@/utils/upstream";
 
 const logger = consola.withTag("completionsApi");
 
@@ -32,12 +32,12 @@ export const tChatCompletionCreate = t.Object({
 export const completionsApi = new Elysia().use(apiKeyPlugin).post(
   "/chat/completions",
   async function* ({ body, error, bearer }) {
-    const upstream = selectUpstream(upstreams, body.model);
+    const upstream = await selectUpstream(body.model);
     if (!upstream) {
       return error(404, "Model not found");
     }
     const upstreamName = upstream.name;
-    const upstreamEndpoint = `${upstream.endPoint}/chat/completions`;
+    const upstreamEndpoint = `${upstream.url}/chat/completions`;
     const upstreamAuth = upstream.apiKey ? `Bearer ${upstream.apiKey}` : undefined;
 
     const cleanedMessages = body.messages.map((u) => {
