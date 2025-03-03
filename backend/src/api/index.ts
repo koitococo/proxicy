@@ -1,7 +1,11 @@
 import { Elysia } from "elysia";
 import { completionsApi } from "./completions";
-import { usageQuery } from "./usage";
+import { usageQueryApi } from "./usage";
+import { routes as adminRoutes } from "./admin";
 
-export const routes = new Elysia().group("/v1", (app) => {
-  return app.use(completionsApi).use(usageQuery);
-});
+export const routes = new Elysia()
+  .group("/v1", (app) => {
+    return app.use(completionsApi);
+  })
+  .use(usageQueryApi)
+  .use(adminRoutes);

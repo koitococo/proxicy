@@ -1,0 +1,10 @@
+[
+  {
+    "supportedModels": [
+      "deekseek-r1"
+    ],
+    "name": "self-hosted",
+    "endPoint": "http://localhost:30115/v1",
+    "apiKey": "sk-this-is-a-fake-api-key"
+  }
+]

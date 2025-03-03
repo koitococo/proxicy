@@ -19,7 +19,7 @@ export async function checkApiKey(key: string): Promise<boolean> {
  * generate a random API key
  * @returns a new API key
  */
-function generateApiKey() {
+export function generateApiKey() {
   const buf = crypto.randomBytes(16);
 
   return `sk-${Array.from(buf, (v) => v.toString(16).padStart(2, "0")).join("")}`;

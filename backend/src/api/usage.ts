@@ -6,9 +6,9 @@ import { queryUsage } from "../utils/completions";
 
 const logger = consola.withTag("usageQuery");
 
-export const usageQuery = new Elysia().use(apiKeyPlugin).get(
-  "/chat/completions",
-  async function* ({ body, error, userKey }) {
+export const usageQueryApi = new Elysia().use(apiKeyPlugin).get(
+  "/usage",
+  async function* ({ error, userKey }) {
     if (userKey === undefined) {
       return error(400, "missing user key");
     }

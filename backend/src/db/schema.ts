@@ -12,8 +12,8 @@ import {
 
 export const ApiKeysTable = pgTable("api_keys", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  key: char("key", {
-    length: 32,
+  key: varchar("key", {
+    length: 63,
   })
     .notNull()
     .unique(),
