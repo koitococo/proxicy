@@ -7,6 +7,7 @@
     "backend": {
       "name": "proxicy-ts",
       "dependencies": {
+        "@elysiajs/cors": "^1.2.0",
         "@elysiajs/opentelemetry": "^1.2.0",
         "@elysiajs/swagger": "^1.2.2",
         "consola": "^3.4.0",
@@ -155,6 +156,8 @@
     "@csstools/css-tokenizer": ["@csstools/css-tokenizer@3.0.3", "https://registry.npmmirror.com/@csstools/css-tokenizer/-/css-tokenizer-3.0.3.tgz", {}, "sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw=="],
 
     "@drizzle-team/brocli": ["@drizzle-team/brocli@0.10.2", "https://registry.npmmirror.com/@drizzle-team/brocli/-/brocli-0.10.2.tgz", {}, "sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w=="],
+
+    "@elysiajs/cors": ["@elysiajs/cors@1.2.0", "https://registry.npmmirror.com/@elysiajs/cors/-/cors-1.2.0.tgz", { "peerDependencies": { "elysia": ">= 1.2.0" } }, "sha512-qsJwDAg6WfdQRMfj6uSMcDPSpXvm/zQFeAX1uuJXhIgazH8itSfcDxcH9pMuXVRX1yQNi2pPwNQLJmAcw5mzvw=="],
 
     "@elysiajs/eden": ["@elysiajs/eden@1.2.0", "https://registry.npmmirror.com/@elysiajs/eden/-/eden-1.2.0.tgz", { "peerDependencies": { "elysia": ">= 1.2.0" } }, "sha512-MpV45ahuF+iFZUg4tyJbLr9qxzY99m8clJVgQrDrz7Qh6eOKQ8MY6vjYMj3Wh21pTIRHPHzOLhVorRGby1/Owg=="],
 
