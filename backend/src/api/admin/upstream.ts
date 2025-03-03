@@ -10,7 +10,7 @@ const tUpstreamCreate = t.Object({
 
 export const adminUpstream = new Elysia()
   .get("/upstream", async (_) => {
-    return JSON.stringify(await listUpstreams());
+    return await listUpstreams();
   })
   .post(
     "/upstream",
@@ -19,7 +19,7 @@ export const adminUpstream = new Elysia()
       if (r === null) {
         return error(500, "Failed to create upstream");
       }
-      return JSON.stringify(r);
+      return r;
     },
     {
       body: tUpstreamCreate,
@@ -33,7 +33,7 @@ export const adminUpstream = new Elysia()
       if (r === null) {
         return error(404, "Upstream not found");
       }
-      return JSON.stringify(r);
+      return r;
     },
     {
       params: t.Object({
