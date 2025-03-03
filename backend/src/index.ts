@@ -39,7 +39,11 @@ const app = new Elysia()
   .use(opentelemetry())
   .use(serverTiming())
   .use(routes)
-  .listen(PORT);
+  .listen({
+    port: PORT,
+    reusePort: true,
+    hostname: "0.0.0.0",
+  });
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
 
