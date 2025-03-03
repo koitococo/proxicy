@@ -1,14 +1,8 @@
 import { findApiKey, listApiKeys } from "@/db";
-import { apiKeyPlugin } from "@/plugins/apiKeyPlugin";
 import { generateApiKey, newApiKey, revokeApiKey } from "@/utils/apiKey";
 import { Elysia, t } from "elysia";
 
-export const adminApiKey = new Elysia({
-  detail: {
-    security: [{ bearerAuth: [] }],
-  },
-})
-  .use(apiKeyPlugin)
+export const adminApiKey = new Elysia()
   .get("/apiKey", async (_) => {
     return JSON.stringify(await listApiKeys());
   })
@@ -26,7 +20,6 @@ export const adminApiKey = new Elysia({
       params: t.Object({
         key: t.String(),
       }),
-      checkAdminApiKey: true,
     },
   )
   .post(
@@ -46,7 +39,6 @@ export const adminApiKey = new Elysia({
         expires_at: t.Optional(t.Date()),
         comment: t.Optional(t.String()),
       }),
-      checkAdminApiKey: true,
     },
   )
   .delete(
@@ -66,6 +58,5 @@ export const adminApiKey = new Elysia({
       params: t.Object({
         key: t.String(),
       }),
-      checkAdminApiKey: true,
     },
   );

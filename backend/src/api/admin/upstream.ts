@@ -1,5 +1,4 @@
 import { deleteUpstream, insertUpstream, listUpstreams } from "@/db";
-import { apiKeyPlugin } from "@/plugins/apiKeyPlugin";
 import Elysia, { t } from "elysia";
 
 const tUpstreamCreate = t.Object({
@@ -9,21 +8,10 @@ const tUpstreamCreate = t.Object({
   apiKey: t.Optional(t.String()),
 });
 
-export const adminApiKey = new Elysia({
-  detail: {
-    security: [{ bearerAuth: [] }],
-  },
-})
-  .use(apiKeyPlugin)
-  .get(
-    "/upstream",
-    async (_) => {
-      return JSON.stringify(await listUpstreams());
-    },
-    {
-      checkAdminApiKey: true,
-    },
-  )
+export const adminUpstream = new Elysia()
+  .get("/upstream", async (_) => {
+    return JSON.stringify(await listUpstreams());
+  })
   .post(
     "/upstream",
     async ({ body, error }) => {
@@ -35,7 +23,6 @@ export const adminApiKey = new Elysia({
     },
     {
       body: tUpstreamCreate,
-      checkAdminApiKey: true,
     },
   )
   .delete(
@@ -52,6 +39,5 @@ export const adminApiKey = new Elysia({
       params: t.Object({
         id: t.Integer(),
       }),
-      checkAdminApiKey: true,
     },
   );

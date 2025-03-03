@@ -22,6 +22,10 @@ const app = new Elysia()
               type: "http",
               scheme: "bearer",
             },
+            apiKey: {
+              type: "http",
+              scheme: "bearer",
+            },
           },
         },
         info: {
