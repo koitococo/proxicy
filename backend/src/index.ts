@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { opentelemetry } from "@elysiajs/opentelemetry";
+import { serverTiming } from "@elysiajs/server-timing";
 import { routes } from "@/api";
 import { loggerPlugin } from "@/plugins/loggerPlugin";
 import { ALLOWED_ORIGINS, PORT } from "@/utils/config";
@@ -36,6 +37,7 @@ const app = new Elysia()
     }),
   )
   .use(opentelemetry())
+  .use(serverTiming())
   .use(routes)
   .listen(PORT);
 

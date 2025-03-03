@@ -16,6 +16,7 @@
   "dependencies": {
     "@elysiajs/cors": "^1.2.0",
     "@elysiajs/opentelemetry": "^1.2.0",
+    "@elysiajs/server-timing": "^1.2.1",
     "@elysiajs/swagger": "^1.2.2",
     "consola": "^3.4.0",
     "drizzle-orm": "^0.40.0",
