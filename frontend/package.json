@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@elysiajs/eden": "^1.2.0",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
     "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
@@ -22,6 +24,7 @@
     "@tanstack/router-plugin": "^1.105.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.477.0",
     "next-themes": "^0.4.4",
     "proxicy-ts": "workspace:backend",

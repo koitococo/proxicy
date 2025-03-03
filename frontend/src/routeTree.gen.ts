@@ -11,64 +11,144 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as LogsRouteImport } from './routes/logs/route'
+import { Route as ApiKeysRouteImport } from './routes/api-keys/route'
+import { Route as DashboardRouteImport } from './routes/_dashboard/route'
 import { Route as LogsIndexImport } from './routes/logs/index'
 import { Route as ApiKeysIndexImport } from './routes/api-keys/index'
 import { Route as DashboardIndexImport } from './routes/_dashboard/index'
 
 // Create/Update Routes
 
-const LogsIndexRoute = LogsIndexImport.update({
-  id: '/logs/',
-  path: '/logs/',
+const LogsRouteRoute = LogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ApiKeysRouteRoute = ApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardRouteRoute = DashboardRouteImport.update({
+  id: '/_dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LogsIndexRoute = LogsIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LogsRouteRoute,
 } as any)
 
 const ApiKeysIndexRoute = ApiKeysIndexImport.update({
-  id: '/api-keys/',
-  path: '/api-keys/',
-  getParentRoute: () => rootRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => ApiKeysRouteRoute,
 } as any)
 
 const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/_dashboard/',
+  id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/api-keys': {
+      id: '/api-keys'
+      path: '/api-keys'
+      fullPath: '/api-keys'
+      preLoaderRoute: typeof ApiKeysRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/logs': {
+      id: '/logs'
+      path: '/logs'
+      fullPath: '/logs'
+      preLoaderRoute: typeof LogsRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/_dashboard/': {
       id: '/_dashboard/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof DashboardIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof DashboardRouteImport
     }
     '/api-keys/': {
       id: '/api-keys/'
-      path: '/api-keys'
-      fullPath: '/api-keys'
+      path: '/'
+      fullPath: '/api-keys/'
       preLoaderRoute: typeof ApiKeysIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof ApiKeysRouteImport
     }
     '/logs/': {
       id: '/logs/'
-      path: '/logs'
-      fullPath: '/logs'
+      path: '/'
+      fullPath: '/logs/'
       preLoaderRoute: typeof LogsIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof LogsRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardRouteRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
+
+interface ApiKeysRouteRouteChildren {
+  ApiKeysIndexRoute: typeof ApiKeysIndexRoute
+}
+
+const ApiKeysRouteRouteChildren: ApiKeysRouteRouteChildren = {
+  ApiKeysIndexRoute: ApiKeysIndexRoute,
+}
+
+const ApiKeysRouteRouteWithChildren = ApiKeysRouteRoute._addFileChildren(
+  ApiKeysRouteRouteChildren,
+)
+
+interface LogsRouteRouteChildren {
+  LogsIndexRoute: typeof LogsIndexRoute
+}
+
+const LogsRouteRouteChildren: LogsRouteRouteChildren = {
+  LogsIndexRoute: LogsIndexRoute,
+}
+
+const LogsRouteRouteWithChildren = LogsRouteRoute._addFileChildren(
+  LogsRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
+  '': typeof DashboardRouteRouteWithChildren
+  '/api-keys': typeof ApiKeysRouteRouteWithChildren
+  '/logs': typeof LogsRouteRouteWithChildren
   '/': typeof DashboardIndexRoute
-  '/api-keys': typeof ApiKeysIndexRoute
-  '/logs': typeof LogsIndexRoute
+  '/api-keys/': typeof ApiKeysIndexRoute
+  '/logs/': typeof LogsIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -79,6 +159,9 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/_dashboard': typeof DashboardRouteRouteWithChildren
+  '/api-keys': typeof ApiKeysRouteRouteWithChildren
+  '/logs': typeof LogsRouteRouteWithChildren
   '/_dashboard/': typeof DashboardIndexRoute
   '/api-keys/': typeof ApiKeysIndexRoute
   '/logs/': typeof LogsIndexRoute
@@ -86,23 +169,30 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api-keys' | '/logs'
+  fullPaths: '' | '/api-keys' | '/logs' | '/' | '/api-keys/' | '/logs/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/api-keys' | '/logs'
-  id: '__root__' | '/_dashboard/' | '/api-keys/' | '/logs/'
+  id:
+    | '__root__'
+    | '/_dashboard'
+    | '/api-keys'
+    | '/logs'
+    | '/_dashboard/'
+    | '/api-keys/'
+    | '/logs/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  DashboardIndexRoute: typeof DashboardIndexRoute
-  ApiKeysIndexRoute: typeof ApiKeysIndexRoute
-  LogsIndexRoute: typeof LogsIndexRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  ApiKeysRouteRoute: typeof ApiKeysRouteRouteWithChildren
+  LogsRouteRoute: typeof LogsRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  DashboardIndexRoute: DashboardIndexRoute,
-  ApiKeysIndexRoute: ApiKeysIndexRoute,
-  LogsIndexRoute: LogsIndexRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  ApiKeysRouteRoute: ApiKeysRouteRouteWithChildren,
+  LogsRouteRoute: LogsRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -115,19 +205,40 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_dashboard/",
-        "/api-keys/",
+        "/_dashboard",
+        "/api-keys",
+        "/logs"
+      ]
+    },
+    "/_dashboard": {
+      "filePath": "_dashboard/route.tsx",
+      "children": [
+        "/_dashboard/"
+      ]
+    },
+    "/api-keys": {
+      "filePath": "api-keys/route.tsx",
+      "children": [
+        "/api-keys/"
+      ]
+    },
+    "/logs": {
+      "filePath": "logs/route.tsx",
+      "children": [
         "/logs/"
       ]
     },
     "/_dashboard/": {
-      "filePath": "_dashboard/index.tsx"
+      "filePath": "_dashboard/index.tsx",
+      "parent": "/_dashboard"
     },
     "/api-keys/": {
-      "filePath": "api-keys/index.tsx"
+      "filePath": "api-keys/index.tsx",
+      "parent": "/api-keys"
     },
     "/logs/": {
-      "filePath": "logs/index.tsx"
+      "filePath": "logs/index.tsx",
+      "parent": "/logs"
     }
   }
 }
