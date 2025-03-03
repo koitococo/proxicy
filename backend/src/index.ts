@@ -9,13 +9,11 @@ import { ALLOWED_ORIGINS, PORT } from "@/utils/config";
 const app = new Elysia()
   .use(loggerPlugin)
   .use(
-    // @ts-expect-error
     cors({
       origin: ALLOWED_ORIGINS,
-    }),
+    })
   )
   .use(
-    // @ts-expect-error
     swagger({
       documentation: {
         components: {
@@ -31,7 +29,7 @@ const app = new Elysia()
           version: "0.0.1",
         },
       },
-    }),
+    })
   )
   .use(opentelemetry())
   .use(routes)
