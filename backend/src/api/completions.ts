@@ -60,7 +60,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
 
     switch (!!body.stream) {
       case false: {
-        logger.log("proxying completions request to upstream", {
+        logger.verbose("proxying completions request to upstream", {
           bearer,
           upstreamEndpoint,
         });
@@ -129,7 +129,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
           include_usage: true,
         };
 
-        logger.log("proxying stream completions request to upstream", {
+        logger.verbose("proxying stream completions request to upstream", {
           userKey: bearer,
           upstreamEndpoint,
           stream: true,

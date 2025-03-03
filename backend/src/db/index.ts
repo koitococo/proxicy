@@ -31,7 +31,7 @@ export type CompletionInsert = typeof schema.CompletionsTable.$inferInsert;
  * @returns db record of api key, null if not found
  */
 export async function findApiKey(key: string): Promise<ApiKey | null> {
-  logger.log("findApiKey", key);
+  logger.verbose("findApiKey", key);
   const r = await db
     .select()
     .from(schema.ApiKeysTable)
@@ -45,7 +45,7 @@ export async function findApiKey(key: string): Promise<ApiKey | null> {
  * @returns db record of api key
  */
 export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
-  logger.log("upsertApiKey", c);
+  logger.verbose("upsertApiKey", c);
   const r = await db
     .insert(schema.ApiKeysTable)
     .values(c)
@@ -65,7 +65,7 @@ export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
 export async function insertCompletion(
   c: CompletionInsert,
 ): Promise<Completion | null> {
-  logger.log("insertCompletion", c.model);
+  logger.verbose("insertCompletion", c.model);
   const r = await db
     .insert(schema.CompletionsTable)
     .values(c)
@@ -83,7 +83,7 @@ export async function sumCompletionTokenUsage(
   apiKeyId?: number,
   model?: string,
 ) {
-  logger.log("sumCompletionTokenUsage", apiKeyId);
+  logger.verbose("sumCompletionTokenUsage", apiKeyId);
   const r = await db
     .select({
       total_prompt_tokens: sum(schema.CompletionsTable.prompt_tokens),

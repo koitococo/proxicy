@@ -18,7 +18,7 @@ export const usageQueryApi = new Elysia({
       if (userKey === undefined) {
         return error(400, "missing user key");
       }
-      logger.log("queryUsage", userKey);
+      logger.verbose("queryUsage", userKey);
       return queryUsage(userKey);
     },
     {
