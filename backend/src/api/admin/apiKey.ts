@@ -8,9 +8,7 @@ import { Elysia, t } from "elysia";
 const logger = consola.withTag("adminApiKey");
 
 if (ADMIN_SUPER_SECRET.length < 6) {
-  logger.warn(
-    "SUPER_ADMIN_SECRET is too short, please set it to a longer value",
-  );
+  logger.warn("SUPER_ADMIN_SECRET is too short, please set it to a longer value");
 }
 // TODO: filter requests by super admin secret
 

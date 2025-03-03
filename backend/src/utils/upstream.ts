@@ -18,20 +18,14 @@ export type Upstream = {
 export function selectUpstream(upstreams: Upstream[], model: string) {
   const m = model.match(/^(\S+):(\S+)$/);
   if (m === null) {
-    const availables = upstreams.filter((u) =>
-      u.supportedModels.includes(model),
-    );
+    const availables = upstreams.filter((u) => u.supportedModels.includes(model));
     if (availables.length === 0) {
       return undefined;
     }
     // TODO: implement load balancing
     return availables[0];
   }
-  return upstreams.find(
-    (u) => u.name === m[1] && u.supportedModels.includes(m[0]),
-  );
+  return upstreams.find((u) => u.name === m[1] && u.supportedModels.includes(m[0]));
 }
 
-export const upstreams: Upstream[] = JSON.parse(
-  readFileSync(UPSTREAMS_FILE || "upstreams.json", "utf-8"),
-);
+export const upstreams: Upstream[] = JSON.parse(readFileSync(UPSTREAMS_FILE || "upstreams.json", "utf-8"));

@@ -1,9 +1,5 @@
 import { findApiKey, insertCompletion, sumCompletionTokenUsage } from "@/db";
-import type {
-  CompletionsCompletionType,
-  CompletionsPromptType,
-  CompletionsStatusEnumType,
-} from "@/db/schema";
+import type { CompletionsCompletionType, CompletionsPromptType, CompletionsStatusEnumType } from "@/db/schema";
 
 /**
  * add a new completion to the database
@@ -25,8 +21,7 @@ export async function addCompletions(
   },
   apiKey?: string,
 ) {
-  const keyId =
-    apiKey === undefined ? -1 : ((await findApiKey(apiKey))?.id ?? -1);
+  const keyId = apiKey === undefined ? -1 : ((await findApiKey(apiKey))?.id ?? -1);
   return await insertCompletion({
     apiKeyId: keyId,
     ...c,

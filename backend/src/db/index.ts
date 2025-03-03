@@ -32,10 +32,7 @@ export type CompletionInsert = typeof schema.CompletionsTable.$inferInsert;
  */
 export async function findApiKey(key: string): Promise<ApiKey | null> {
   logger.verbose("findApiKey", key);
-  const r = await db
-    .select()
-    .from(schema.ApiKeysTable)
-    .where(eq(schema.ApiKeysTable.key, key));
+  const r = await db.select().from(schema.ApiKeysTable).where(eq(schema.ApiKeysTable.key, key));
   return r.length === 1 ? r[0] : null;
 }
 
@@ -62,15 +59,9 @@ export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
  * @param c parameters of completion to insert
  * @returns db record of completion, null if already exists
  */
-export async function insertCompletion(
-  c: CompletionInsert,
-): Promise<Completion | null> {
+export async function insertCompletion(c: CompletionInsert): Promise<Completion | null> {
   logger.verbose("insertCompletion", c.model);
-  const r = await db
-    .insert(schema.CompletionsTable)
-    .values(c)
-    .onConflictDoNothing()
-    .returning();
+  const r = await db.insert(schema.CompletionsTable).values(c).onConflictDoNothing().returning();
   return r.length === 1 ? r[0] : null;
 }
 
@@ -79,10 +70,7 @@ export async function insertCompletion(
  * @param apiKeyId key id, referencing to id colume in api keys table
  * @returns total prompt tokens and completion tokens used by the api key
  */
-export async function sumCompletionTokenUsage(
-  apiKeyId?: number,
-  model?: string,
-) {
+export async function sumCompletionTokenUsage(apiKeyId?: number, model?: string) {
   logger.verbose("sumCompletionTokenUsage", apiKeyId);
   const r = await db
     .select({
@@ -92,12 +80,8 @@ export async function sumCompletionTokenUsage(
     .from(schema.CompletionsTable)
     .where(
       and(
-        apiKeyId !== undefined
-          ? eq(schema.CompletionsTable.apiKeyId, apiKeyId)
-          : undefined,
-        model !== undefined
-          ? eq(schema.CompletionsTable.model, model)
-          : undefined,
+        apiKeyId !== undefined ? eq(schema.CompletionsTable.apiKeyId, apiKeyId) : undefined,
+        model !== undefined ? eq(schema.CompletionsTable.model, model) : undefined,
       ),
     );
   return r.length === 1 ? r[0] : null;

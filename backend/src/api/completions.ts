@@ -38,9 +38,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
     }
     const upstreamName = upstream.name;
     const upstreamEndpoint = `${upstream.endPoint}/chat/completions`;
-    const upstreamAuth = upstream.apiKey
-      ? `Bearer ${upstream.apiKey}`
-      : undefined;
+    const upstreamAuth = upstream.apiKey ? `Bearer ${upstream.apiKey}` : undefined;
 
     const cleanedMessages = body.messages.map((u) => {
       const m = u as { role: string; content: string };
@@ -255,8 +253,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
                 },
                 prompt_tokens: (data.usage ?? undefined)?.prompt_tokens ?? -1,
                 completion: [{ role: undefined, content: partials.join("") }], // Stream API does not provide role
-                completion_tokens:
-                  (data.usage ?? undefined)?.completion_tokens ?? -1,
+                completion_tokens: (data.usage ?? undefined)?.completion_tokens ?? -1,
                 status: "completed",
                 ttft,
                 duration: Date.now() - begin,

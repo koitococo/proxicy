@@ -8,11 +8,7 @@ import * as crypto from "node:crypto";
  */
 export async function checkApiKey(key: string): Promise<boolean> {
   const r = await findApiKey(key);
-  return (
-    r !== null &&
-    !r.revoked &&
-    (r.expires_at === null || r.expires_at > new Date())
-  );
+  return r !== null && !r.revoked && (r.expires_at === null || r.expires_at > new Date());
 }
 
 /**
@@ -32,11 +28,7 @@ export function generateApiKey() {
  * @param comment optional, a comment for the key
  * @returns record of the new key
  */
-export async function newApiKey(
-  key: string,
-  expires_at?: Date,
-  comment?: string,
-) {
+export async function newApiKey(key: string, expires_at?: Date, comment?: string) {
   const r = await upsertApiKey({
     key,
     comment,

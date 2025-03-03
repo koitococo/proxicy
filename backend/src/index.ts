@@ -11,7 +11,7 @@ const app = new Elysia()
   .use(
     cors({
       origin: ALLOWED_ORIGINS,
-    })
+    }),
   )
   .use(
     swagger({
@@ -29,14 +29,12 @@ const app = new Elysia()
           version: "0.0.1",
         },
       },
-    })
+    }),
   )
   .use(opentelemetry())
   .use(routes)
   .listen(PORT);
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
-);
+console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
 
 export type App = typeof app;

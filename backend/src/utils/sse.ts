@@ -1,13 +1,11 @@
-export async function* parseSse(
-  body: ReadableStream<Uint8Array<ArrayBufferLike>>,
-) {
+export async function* parseSse(body: ReadableStream<Uint8Array<ArrayBufferLike>>) {
   const decoder = new TextDecoderStream();
   const reader = body.pipeThrough(decoder).getReader();
   let buffer = "";
   while (true) {
     const { value, done } = await reader.read();
     console.log(value);
-    
+
     if (done) break;
     if (!value) continue;
 

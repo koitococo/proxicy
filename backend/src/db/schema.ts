@@ -1,14 +1,5 @@
 import { relations } from "drizzle-orm";
-import {
-  boolean,
-  integer,
-  jsonb,
-  pgEnum,
-  pgTable,
-  timestamp,
-  varchar,
-  type AnyPgColumn,
-} from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, pgEnum, pgTable, timestamp, varchar, type AnyPgColumn } from "drizzle-orm/pg-core";
 
 export const ApiKeysTable = pgTable("api_keys", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -37,11 +28,7 @@ export type CompletionsCompletionType = {
   content?: string;
 }[];
 
-export const CompletionsStatusEnum = pgEnum("status", [
-  "pending",
-  "completed",
-  "failed",
-]);
+export const CompletionsStatusEnum = pgEnum("status", ["pending", "completed", "failed"]);
 
 export type CompletionsStatusEnumType = "pending" | "completed" | "failed";
 
@@ -67,18 +54,15 @@ export const CompletionsTable = pgTable("completions", {
   deleted: boolean("deleted").notNull().default(false),
 });
 
-export const CompletionsTableRelations = relations(
-  CompletionsTable,
-  ({ one }) => {
-    return {
-      // prev_id: one(CompletionsTable, {
-      // 	fields: [CompletionsTable.prev_id],
-      // 	references: [CompletionsTable.id],
-      // }),
-      apiKeyId: one(ApiKeysTable, {
-        fields: [CompletionsTable.apiKeyId],
-        references: [ApiKeysTable.id],
-      }),
-    };
-  },
-);
+export const CompletionsTableRelations = relations(CompletionsTable, ({ one }) => {
+  return {
+    // prev_id: one(CompletionsTable, {
+    // 	fields: [CompletionsTable.prev_id],
+    // 	references: [CompletionsTable.id],
+    // }),
+    apiKeyId: one(ApiKeysTable, {
+      fields: [CompletionsTable.apiKeyId],
+      references: [ApiKeysTable.id],
+    }),
+  };
+});
