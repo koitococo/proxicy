@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
-import { eq, sum } from "drizzle-orm";
+import { and, eq, sum } from "drizzle-orm";
 import consola from "consola";
 
 const globalThis_ = globalThis as typeof globalThis & {
@@ -25,6 +25,11 @@ export type ApiKeyInsert = typeof schema.ApiKeysTable.$inferInsert;
 export type Completion = typeof schema.CompletionsTable.$inferSelect;
 export type CompletionInsert = typeof schema.CompletionsTable.$inferInsert;
 
+/**
+ * find api key in database
+ * @param key api key
+ * @returns db record of api key, null if not found
+ */
 export async function findApiKey(key: string): Promise<ApiKey | null> {
   logger.log("findApiKey", key);
   const r = await db
@@ -34,6 +39,11 @@ export async function findApiKey(key: string): Promise<ApiKey | null> {
   return r.length === 1 ? r[0] : null;
 }
 
+/**
+ * insert api key into database, or update if already exists
+ * @param c parameters of api key to insert or update
+ * @returns db record of api key
+ */
 export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
   logger.log("upsertApiKey", c);
   const r = await db
@@ -47,6 +57,11 @@ export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
   return r.length === 1 ? r[0] : null;
 }
 
+/**
+ * insert completion into database
+ * @param c parameters of completion to insert
+ * @returns db record of completion, null if already exists
+ */
 export async function insertCompletion(
   c: CompletionInsert,
 ): Promise<Completion | null> {
@@ -59,7 +74,12 @@ export async function insertCompletion(
   return r.length === 1 ? r[0] : null;
 }
 
-export async function sumCompletionTokenUsage(apiKeyId: number) {
+/**
+ * count total prompt tokens and completion tokens used by the api key
+ * @param apiKeyId key id, referencing to id colume in api keys table
+ * @returns total prompt tokens and completion tokens used by the api key
+ */
+export async function sumCompletionTokenUsage(apiKeyId?: number, model?:string) {
   logger.log("sumCompletionTokenUsage", apiKeyId);
   const r = await db
     .select({
@@ -67,6 +87,9 @@ export async function sumCompletionTokenUsage(apiKeyId: number) {
       total_completion_tokens: sum(schema.CompletionsTable.completion_tokens),
     })
     .from(schema.CompletionsTable)
-    .where(eq(schema.CompletionsTable.apiKeyId, apiKeyId));
-  return r[0];
+    .where(and(
+      apiKeyId !== undefined ? eq(schema.CompletionsTable.apiKeyId, apiKeyId) : undefined,
+      model !== undefined ? eq(schema.CompletionsTable.model, model) : undefined
+    ))
+  return r.length === 1 ? r[0] : null;
 }

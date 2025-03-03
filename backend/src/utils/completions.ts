@@ -1,4 +1,4 @@
-import { findApiKey, insertCompletion } from "../db";
+import { findApiKey, insertCompletion, sumCompletionTokenUsage } from "../db";
 import type {
   CompletionsCompletionType,
   CompletionsPromptType,
@@ -13,6 +13,7 @@ import type {
 export async function addCompletions(
   c: {
     model: string;
+    upstream: string;
     prompt: CompletionsPromptType;
     prompt_tokens: number;
     completion: CompletionsCompletionType;
@@ -26,4 +27,14 @@ export async function addCompletions(
     apiKeyId: keyId,
     ...c,
   });
+}
+
+export async function queryUsage(
+  apiKey: string,
+) {
+  const key = await findApiKey(apiKey);
+  if (key === null) {
+    return null;
+  }
+  return sumCompletionTokenUsage(key.id, undefined);
 }

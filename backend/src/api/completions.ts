@@ -31,6 +31,7 @@ export const tChatCompletionCreate = t.Object({
 export const completionsApi = new Elysia().use(apiKeyPlugin).post(
   "/chat/completions",
   async function* ({ body, error, userKey }) {
+    const upstream = "default"; // TODO: dynamically select upstream
     const upstreamEndpoint = `${process.env.UPSTREAM_API}/chat/completions`;
     const upstreamAuth = `Bearer ${process.env.UPSTREAM_API_KEY}`;
 
@@ -70,6 +71,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
         addCompletions(
           {
             model: body.model,
+            upstream,
             prompt: {
               messages: cleanedMessages,
               n: body.n,
@@ -140,6 +142,7 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
             const full = partials.join("");
             const c = {
               model: data.model,
+              upstream,
               prompt: {
                 messages: cleanedMessages,
                 n: body.n,

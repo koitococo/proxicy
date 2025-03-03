@@ -7,14 +7,8 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [
-      "node_modules",
-      "dist"
-    ],
-    "include": [
-      "backend/**/*.js",
-      "frontend/**/*.ts"
-    ]
+    "ignore": ["node_modules", "out", "frontend"],
+    "include": ["backend/**/*.js", "frontend/**/*.ts"]
   },
   "formatter": {
     "enabled": true,
