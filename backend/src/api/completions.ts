@@ -10,7 +10,7 @@ import { selectUpstream } from "@/utils/upstream";
 const logger = consola.withTag("completionsApi");
 
 // very basic validation for only top level fields
-export const tChatCompletionCreate = t.Object({
+const tChatCompletionCreate = t.Object({
   messages: t.Array(t.Unknown()),
   model: t.String(),
   frequency_penalty: t.Optional(t.Number()),

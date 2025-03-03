@@ -42,7 +42,7 @@ export const UpstreamTable = pgTable("upstreams", {
   comment: varchar("comment"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
-  deleted: boolean("revoked").notNull().default(false),
+  deleted: boolean("deleted").notNull().default(false),
 });
 
 export type CompletionsPromptType = {
@@ -64,9 +64,6 @@ export type CompletionsStatusEnumType = "pending" | "completed" | "failed";
 
 export const CompletionsTable = pgTable("completions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity().unique(),
-  // prev_id: integer("prev_id").references(
-  // 	(): AnyPgColumn => CompletionsTable.id,
-  // ),
   apiKeyId: integer("apiKeyId")
     .notNull()
     .references((): AnyPgColumn => ApiKeysTable.id),
@@ -87,10 +84,6 @@ export const CompletionsTable = pgTable("completions", {
 
 export const CompletionsTableRelations = relations(CompletionsTable, ({ one }) => {
   return {
-    // prev_id: one(CompletionsTable, {
-    // 	fields: [CompletionsTable.prev_id],
-    // 	references: [CompletionsTable.id],
-    // }),
     apiKeyId: one(ApiKeysTable, {
       fields: [CompletionsTable.apiKeyId],
       references: [ApiKeysTable.id],

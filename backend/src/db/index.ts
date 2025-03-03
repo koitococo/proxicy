@@ -27,6 +27,12 @@ export type UpstreamInsert = typeof schema.UpstreamTable.$inferInsert;
 export type Completion = typeof schema.CompletionsTable.$inferSelect;
 export type CompletionInsert = typeof schema.CompletionsTable.$inferInsert;
 
+export type PartialList<T> = {
+  data: T[];
+  total: number;
+  from: number;
+};
+
 /**
  * find api key in database
  * @param key api key
@@ -36,6 +42,15 @@ export async function findApiKey(key: string): Promise<ApiKey | null> {
   logger.verbose("findApiKey", key);
   const r = await db.select().from(schema.ApiKeysTable).where(eq(schema.ApiKeysTable.key, key));
   return r.length === 1 ? r[0] : null;
+}
+
+/**
+ * list ALL api keys in database
+ * @returns db records of api keys
+ */
+export async function listApiKeys(): Promise<ApiKey[]> {
+  logger.verbose("listApiKeys");
+  return await db.select().from(schema.ApiKeysTable);
 }
 
 /**
@@ -63,6 +78,7 @@ export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
  * @returns db records of upstream, null if not found
  */
 export async function findUpstreams(model: string, upstream?: string): Promise<Upstream[]> {
+  logger.verbose("findUpstreams", model, upstream);
   const r = await db
     .select()
     .from(schema.UpstreamTable)
@@ -74,6 +90,42 @@ export async function findUpstreams(model: string, upstream?: string): Promise<U
       ),
     );
   return r;
+}
+
+/**
+ * list ALL upstreams in database, not including deleted ones
+ * @returns db records of upstreams
+ */
+export async function listUpstreams() {
+  logger.verbose("listUpstreams");
+  const r = await db.select().from(schema.UpstreamTable).where(not(schema.UpstreamTable.deleted));
+  return r;
+}
+
+/**
+ * insert upstream into database
+ * @param c parameters of upstream to insert
+ * @returns record of the new upstream, null if already exists
+ */
+export async function insertUpstream(c: UpstreamInsert): Promise<Upstream | null> {
+  logger.verbose("insertUpstream", c);
+  const r = await db.insert(schema.UpstreamTable).values(c).onConflictDoNothing().returning();
+  return r.length === 1 ? r[0] : null;
+}
+
+/**
+ * mark an upstream as deleted
+ * @param id upstream id
+ * @returns delete record of upstream, null if not found
+ */
+export async function deleteUpstream(id: number) {
+  logger.verbose("deleteUpstream", id);
+  const r = await db
+    .update(schema.UpstreamTable)
+    .set({ deleted: true })
+    .where(eq(schema.UpstreamTable.id, id))
+    .returning();
+  return r.length === 1 ? r[0] : null;
 }
 
 /**

@@ -1,21 +1,7 @@
-import { findApiKey } from "@/db";
+import { findApiKey, listApiKeys } from "@/db";
 import { apiKeyPlugin } from "@/plugins/apiKeyPlugin";
 import { generateApiKey, newApiKey, revokeApiKey } from "@/utils/apiKey";
-import { ADMIN_SUPER_SECRET } from "@/utils/config";
-import consola from "consola";
 import { Elysia, t } from "elysia";
-
-const logger = consola.withTag("adminApiKey");
-
-if (ADMIN_SUPER_SECRET.length < 6) {
-  logger.warn("SUPER_ADMIN_SECRET is too short, please set it to a longer value");
-}
-// TODO: filter requests by super admin secret
-
-const tApiKeyCreate = t.Object({
-  expires_at: t.Optional(t.Date()),
-  comment: t.Optional(t.String()),
-});
 
 export const adminApiKey = new Elysia({
   detail: {
@@ -23,6 +9,9 @@ export const adminApiKey = new Elysia({
   },
 })
   .use(apiKeyPlugin)
+  .get("/apiKey", async (_) => {
+    return JSON.stringify(await listApiKeys());
+  })
   .get(
     "/apiKey/:key",
     async ({ error, params }) => {
@@ -53,7 +42,10 @@ export const adminApiKey = new Elysia({
       });
     },
     {
-      body: tApiKeyCreate,
+      body: t.Object({
+        expires_at: t.Optional(t.Date()),
+        comment: t.Optional(t.String()),
+      }),
       checkAdminApiKey: true,
     },
   )

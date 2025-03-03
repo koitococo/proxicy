@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-import { UPSTREAMS_FILE } from "./config";
 import { findUpstreams } from "@/db";
 
 /**
