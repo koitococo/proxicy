@@ -6,7 +6,7 @@ export const api = treaty<App>(import.meta.env.VITE_BASE_URL, {
     const adminSecret = localStorage.getItem('admin-secret')
     if (!adminSecret) return undefined
     return {
-      authorization: `Bearer ${adminSecret}`,
+      authorization: `Bearer ${JSON.parse(adminSecret)}`,
     }
   },
 })

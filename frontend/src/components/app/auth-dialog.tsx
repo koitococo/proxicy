@@ -20,12 +20,10 @@ export function AuthDialog() {
   const { data: checkPassed = true } = useQuery({
     queryKey: ['check-secret', secret],
     queryFn: async () => {
-      const { data, error } = await api.secret.check.get({ query: { secret } })
+      const { data, error } = await api.admin.index.get()
       if (error) {
-        toast.error(error.value.message)
-      }
-      if (!data) {
         toast.error('Invalid secret')
+        return false
       }
       return data
     },
