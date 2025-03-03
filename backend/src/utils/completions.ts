@@ -2,6 +2,7 @@ import { findApiKey, insertCompletion, sumCompletionTokenUsage } from "@/db";
 import type {
   CompletionsCompletionType,
   CompletionsPromptType,
+  CompletionsStatusEnumType,
 } from "@/db/schema";
 
 /**
@@ -18,6 +19,9 @@ export async function addCompletions(
     prompt_tokens: number;
     completion: CompletionsCompletionType;
     completion_tokens: number;
+    status: CompletionsStatusEnumType;
+    ttft: number;
+    duration: number;
   },
   apiKey?: string,
 ) {

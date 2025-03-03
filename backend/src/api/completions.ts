@@ -56,7 +56,6 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
         "Content-Type": "application/json",
         ...(upstreamAuth ? { Authorization: upstreamAuth } : {}),
       },
-      body: JSON.stringify(body),
     };
 
     switch (!!body.stream) {
@@ -65,13 +64,31 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
           bearer,
           upstreamEndpoint,
         });
-        const resp = await fetch(upstreamEndpoint, reqInit);
+        const begin = Date.now();
+        const resp = await fetch(upstreamEndpoint, {
+          body: JSON.stringify(body),
+          ...reqInit,
+        });
 
         if (!resp.ok) {
           const msg = await resp.text();
           logger.error("upstream error", {
             status: resp.status,
             msg,
+          });
+          addCompletions({
+            model: body.model,
+            upstream: upstreamName,
+            prompt: {
+              messages: cleanedMessages,
+              n: body.n,
+            },
+            prompt_tokens: -1,
+            completion: [],
+            completion_tokens: -1,
+            status: "failed",
+            ttft: -1,
+            duration: -1,
           });
           return error(resp.status, msg);
         }
@@ -92,6 +109,9 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
               content: c.message.content ?? undefined,
             })),
             completion_tokens: respJson.usage?.completion_tokens ?? -1,
+            status: "completed",
+            ttft: Date.now() - begin,
+            duration: Date.now() - begin,
           },
           bearer,
         );
@@ -114,13 +134,31 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
           upstreamEndpoint,
           stream: true,
         });
-        const resp = await fetch(upstreamEndpoint, reqInit);
+        const begin = Date.now();
+        const resp = await fetch(upstreamEndpoint, {
+          body: JSON.stringify(body),
+          ...reqInit,
+        });
 
         if (!resp.ok) {
           const msg = await resp.text();
           logger.error("upstream error", {
             status: resp.status,
             msg,
+          });
+          addCompletions({
+            model: body.model,
+            upstream: upstreamName,
+            prompt: {
+              messages: cleanedMessages,
+              n: body.n,
+            },
+            prompt_tokens: -1,
+            completion: [],
+            completion_tokens: -1,
+            status: "failed",
+            ttft: -1,
+            duration: -1,
           });
           return error(resp.status, msg);
         }
@@ -129,38 +167,107 @@ export const completionsApi = new Elysia().use(apiKeyPlugin).post(
             status: resp.status,
             msg: "No body",
           });
+          addCompletions({
+            model: body.model,
+            upstream: upstreamName,
+            prompt: {
+              messages: cleanedMessages,
+              n: body.n,
+            },
+            prompt_tokens: -1,
+            completion: [],
+            completion_tokens: -1,
+            status: "failed",
+            ttft: -1,
+            duration: -1,
+          });
           return error(500, "No body");
         }
 
         const chunks: AsyncGenerator<string> = parseSse(resp.body);
 
+        let ttft = -1;
+        let isFirstChunk = true;
         const partials = [];
         for await (const chunk of chunks) {
-          const data = JSON.parse(chunk) as ChatCompletionChunk;
+          if (isFirstChunk) {
+            // log the time to first chunk as ttft
+            isFirstChunk = false;
+            ttft = Date.now() - begin;
+          }
+          if (chunk.startsWith("[DONE]")) {
+            // Workaround: In most cases, upstream will return a message that is a valid json, and has length of choices = 0,
+            //   which will be handled in below. However, in some cases, the last message is '[DONE]', and no usage is returned.
+            //   In this case, we will end this completion.
+            addCompletions(
+              {
+                model: body.model,
+                upstream: upstreamName,
+                prompt: {
+                  messages: cleanedMessages,
+                  n: body.n,
+                },
+                prompt_tokens: -1,
+                completion: [{ role: undefined, content: partials.join("") }], // Stream API does not provide role
+                completion_tokens: -1,
+                status: "completed",
+                ttft,
+                duration: Date.now() - begin,
+              },
+              bearer,
+            );
+            yield `data: ${chunk}\n\n`;
+            break;
+          }
+
+          let data: ChatCompletionChunk | undefined = undefined;
+          try {
+            data = JSON.parse(chunk) as ChatCompletionChunk;
+          } catch (e) {
+            logger.error("Error occured when parsing json", e);
+          }
+          if (data === undefined) {
+            // Unreachable, unless json parsing failed indicating a malformed response
+            logger.error("upstream error", {
+              status: resp.status,
+              msg: "Invalid JSON",
+              chunk,
+            });
+            return error(500, "Invalid JSON");
+          }
+
           if (data.choices.length === 1) {
+            // If there is only one choice, regular chunk
             const content = data.choices[0].delta.content ?? "";
             partials.push(content);
-          } else if (data.choices.length === 0) {
-            // Assuse that is the last chunk
-            const usage = data.usage ?? undefined;
-            const full = partials.join("");
-            const c = {
-              model: data.model,
-              upstream: upstreamName,
-              prompt: {
-                messages: cleanedMessages,
-                n: body.n,
-              },
-              prompt_tokens: usage?.prompt_tokens ?? -1,
-              completion: [{ role: undefined, content: full }], // Stream API does not provide role
-              completion_tokens: usage?.completion_tokens ?? -1,
-            };
-            addCompletions(c, bearer);
-            break;
-          } else {
-            return error(500, "Unexpected chunk");
+            yield `data: ${chunk}\n\n`;
+            continue;
           }
-          yield `data: ${chunk}\n\n`;
+          if (data.choices.length === 0) {
+            // Assuse that is the last chunk
+            addCompletions(
+              {
+                model: data.model,
+                upstream: upstreamName,
+                prompt: {
+                  messages: cleanedMessages,
+                  n: body.n,
+                },
+                prompt_tokens: (data.usage ?? undefined)?.prompt_tokens ?? -1,
+                completion: [{ role: undefined, content: partials.join("") }], // Stream API does not provide role
+                completion_tokens:
+                  (data.usage ?? undefined)?.completion_tokens ?? -1,
+                status: "completed",
+                ttft,
+                duration: Date.now() - begin,
+              },
+              bearer,
+            );
+            yield `data: ${chunk}\n\n`;
+            break;
+          }
+          // Unreachable, unless upstream returned a malformed response
+          return error(500, "Unexpected chunk");
         }
         for await (const chunk of chunks) {
           // Continue to yield the rest of the chunks if needed

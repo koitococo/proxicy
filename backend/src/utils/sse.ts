@@ -6,6 +6,8 @@ export async function* parseSse(
   let buffer = "";
   while (true) {
     const { value, done } = await reader.read();
+    console.log(value);
+    
     if (done) break;
     if (!value) continue;
 
