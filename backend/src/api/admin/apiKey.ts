@@ -19,7 +19,11 @@ const tApiKeyCreate = t.Object({
   comment: t.Optional(t.String()),
 });
 
-export const adminApiKey = new Elysia()
+export const adminApiKey = new Elysia({
+  detail: {
+    security: [{ bearerAuth: [] }],
+  },
+})
   .use(apiKeyPlugin)
   .get(
     "/apiKey/:key",
@@ -63,7 +67,7 @@ export const adminApiKey = new Elysia()
       if (r === null) {
         return error(404, "Key not found");
       }
-      return  JSON.stringify({
+      return JSON.stringify({
         key: r.key,
         revoked: r.revoked,
       });
