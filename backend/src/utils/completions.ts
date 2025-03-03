@@ -1,8 +1,8 @@
-import { findApiKey, insertCompletion, sumCompletionTokenUsage } from "../db";
+import { findApiKey, insertCompletion, sumCompletionTokenUsage } from "@/db";
 import type {
   CompletionsCompletionType,
   CompletionsPromptType,
-} from "../db/schema";
+} from "@/db/schema";
 
 /**
  * add a new completion to the database

@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
-import { routes } from "./api";
 import { opentelemetry } from "@elysiajs/opentelemetry";
-import { loggerPlugin } from "./plugins/loggerPlugin";
+import { routes } from "@/api";
+import { loggerPlugin } from "@/plugins/loggerPlugin";
 
 const port = process.env.PORT || 3000;
 

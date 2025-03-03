@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { checkApiKey } from "../utils/apiKey";
+import { checkApiKey } from "@/utils/apiKey.ts";
 
 export const apiKeyPlugin = new Elysia({ name: "apiKeyPlugin" })
   .derive({ as: "global" }, ({ headers }) => {

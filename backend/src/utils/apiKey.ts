@@ -1,4 +1,4 @@
-import { findApiKey, upsertApiKey } from "../db";
+import { findApiKey, upsertApiKey } from "@/db";
 import * as crypto from "node:crypto";
 
 /**
