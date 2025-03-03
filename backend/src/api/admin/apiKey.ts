@@ -23,13 +23,13 @@ export const adminApiKey = new Elysia()
   .use(apiKeyPlugin)
   .get(
     "/apiKey/:key",
-    async function* ({ error, params }) {
+    async ({ error, params }) => {
       const { key } = params;
       const r = await findApiKey(key);
       if (r === null) {
         return error(404, "Key not found");
       }
-      yield JSON.stringify(r);
+      return JSON.stringify(r);
     },
     {
       params: t.Object({
@@ -40,13 +40,13 @@ export const adminApiKey = new Elysia()
   )
   .post(
     "/apiKey",
-    async function* ({ body, error }) {
+    async ({ body, error }) => {
       const key = generateApiKey();
       const r = await newApiKey(key, body.expires_at, body.comment);
       if (r === null) {
         return error(500, "Failed to create key");
       }
-      yield JSON.stringify({
+      return JSON.stringify({
         key: r.key,
       });
     },
@@ -57,13 +57,13 @@ export const adminApiKey = new Elysia()
   )
   .delete(
     "/apiKey/:key",
-    async function* ({ error, params }) {
+    async ({ error, params }) => {
       const { key } = params;
       const r = await revokeApiKey(key);
       if (r === null) {
         return error(404, "Key not found");
       }
-      yield JSON.stringify({
+      return  JSON.stringify({
         key: r.key,
         revoked: r.revoked,
       });

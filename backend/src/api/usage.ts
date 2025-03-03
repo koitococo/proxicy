@@ -8,12 +8,12 @@ const logger = consola.withTag("usageQuery");
 
 export const usageQueryApi = new Elysia().use(apiKeyPlugin).get(
   "/usage",
-  async function* ({ error, userKey }) {
+  async ({ error, userKey }) => {
     if (userKey === undefined) {
       return error(400, "missing user key");
     }
     logger.log("queryUsage", userKey);
-    yield JSON.stringify(queryUsage(userKey));
+    return JSON.stringify(queryUsage(userKey));
   },
   {
     checkApiKey: true,
