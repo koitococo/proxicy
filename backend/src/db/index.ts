@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
-import { eq } from "drizzle-orm";
+import { eq, sum } from "drizzle-orm";
 import consola from "consola";
 
 const globalThis_ = globalThis as typeof globalThis & {
@@ -57,4 +57,16 @@ export async function insertCompletion(
     .onConflictDoNothing()
     .returning();
   return r.length === 1 ? r[0] : null;
+}
+
+export async function sumCompletionTokenUsage(apiKeyId: number) {
+  logger.log("sumCompletionTokenUsage", apiKeyId);
+  const r = await db
+    .select({
+      total_prompt_tokens: sum(schema.CompletionsTable.prompt_tokens),
+      total_completion_tokens: sum(schema.CompletionsTable.completion_tokens),
+    })
+    .from(schema.CompletionsTable)
+    .where(eq(schema.CompletionsTable.apiKeyId, apiKeyId));
+  return r[0];
 }
