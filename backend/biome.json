@@ -7,8 +7,8 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules", "out", "frontend"],
-    "include": ["backend/**/*.js", "backend/**/*.ts"]
+    "ignore": ["node_modules", "out"],
+    "include": ["src/**/*.js", "src/**/*.ts"]
   },
   "formatter": {
     "enabled": true,
