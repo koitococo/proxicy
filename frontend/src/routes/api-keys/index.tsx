@@ -4,7 +4,6 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
-import { AddButton } from '@/components/api-keys/add-button'
 import { ApiKeysDataTable } from '@/components/api-keys/data-table'
 import { queryClient } from '@/components/app/query-provider'
 
@@ -30,15 +29,14 @@ export const Route = createFileRoute('/api-keys/')({
 })
 
 function RouteComponent() {
-  const { includeRevoked } = Route.useSearch()
+  const { includeRevoked = false } = Route.useSearch()
   const { data } = useSuspenseQuery(apiKeysQueryOptions({ includeRevoked }))
 
   return (
-    <div className="px-4">
-      <ApiKeysDataTable data={data} />
-      <div className="mt-4">
-        <AddButton />
+    <main>
+      <div className="mx-auto max-w-6xl px-4">
+        <ApiKeysDataTable data={data} includeRevoked={includeRevoked} />
       </div>
-    </div>
+    </main>
   )
 }
