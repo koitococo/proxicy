@@ -3,9 +3,17 @@ import { generateApiKey } from "@/utils/apiKey";
 import { Elysia, t } from "elysia";
 
 export const adminApiKey = new Elysia()
-  .get("/apiKey", async (_) => {
-    return await listApiKeys();
-  })
+  .get(
+    "/apiKey",
+    async ({ query }) => {
+      return await listApiKeys(query.includeRevoked ?? false);
+    },
+    {
+      query: t.Object({
+        includeRevoked: t.Optional(t.Boolean()),
+      }),
+    },
+  )
   .get(
     "/apiKey/:key",
     async ({ error, params }) => {

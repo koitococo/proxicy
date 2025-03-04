@@ -48,9 +48,13 @@ export async function findApiKey(key: string): Promise<ApiKey | null> {
  * list ALL api keys in database
  * @returns db records of api keys
  */
-export async function listApiKeys(): Promise<ApiKey[]> {
+export async function listApiKeys(all = false): Promise<ApiKey[]> {
   logger.verbose("listApiKeys");
-  return await db.select().from(schema.ApiKeysTable);
+  return await db
+    .select()
+    .from(schema.ApiKeysTable)
+    .where(all ? undefined : not(schema.ApiKeysTable.revoked))
+    .orderBy(asc(schema.ApiKeysTable.id));
 }
 
 /**
