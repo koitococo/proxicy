@@ -159,7 +159,7 @@ function ExpireDatePicker({ value, onValueChange }: { value?: Date; onValueChang
             case 'no':
               return onValueChange(undefined)
             case 'custom':
-              return
+              return onValueChange(addDays(new Date().setHours(0, 0, 0, 0), 1))
             default:
               return onValueChange(addDays(new Date().setHours(0, 0, 0, 0), parseInt(v)))
           }
