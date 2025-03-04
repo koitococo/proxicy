@@ -1,5 +1,5 @@
 import { Link, useMatchRoute } from '@tanstack/react-router'
-import { KeyRoundIcon, ScrollTextIcon, SquareActivityIcon, WaypointsIcon } from 'lucide-react'
+import { ArrowUpDownIcon, KeyRoundIcon, PackageIcon, SquareActivityIcon, WaypointsIcon } from 'lucide-react'
 
 import {
   Sidebar,
@@ -25,9 +25,14 @@ const navItems = [
     href: '/api-keys',
   },
   {
-    icon: <ScrollTextIcon />,
-    title: 'Logs',
-    href: '/logs',
+    icon: <PackageIcon />,
+    title: 'Providers',
+    href: '/providers',
+  },
+  {
+    icon: <ArrowUpDownIcon />,
+    title: 'Requests',
+    href: '/requests',
   },
 ]
 
@@ -65,7 +70,7 @@ export function AppSidebar() {
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
-                    isActive={!!matchRoute({ to: item.href })}
+                    isActive={!!matchRoute({ to: item.href, fuzzy: true })}
                     tooltip={{ children: item.title }}
                     asChild
                   >

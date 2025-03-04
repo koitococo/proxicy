@@ -11,18 +11,26 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LogsRouteImport } from './routes/logs/route'
+import { Route as RequestsRouteImport } from './routes/requests/route'
+import { Route as ProvidersRouteImport } from './routes/providers/route'
 import { Route as ApiKeysRouteImport } from './routes/api-keys/route'
 import { Route as DashboardRouteImport } from './routes/_dashboard/route'
-import { Route as LogsIndexImport } from './routes/logs/index'
+import { Route as RequestsIndexImport } from './routes/requests/index'
+import { Route as ProvidersIndexImport } from './routes/providers/index'
 import { Route as ApiKeysIndexImport } from './routes/api-keys/index'
 import { Route as DashboardIndexImport } from './routes/_dashboard/index'
 
 // Create/Update Routes
 
-const LogsRouteRoute = LogsRouteImport.update({
-  id: '/logs',
-  path: '/logs',
+const RequestsRouteRoute = RequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProvidersRouteRoute = ProvidersRouteImport.update({
+  id: '/providers',
+  path: '/providers',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -37,10 +45,16 @@ const DashboardRouteRoute = DashboardRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LogsIndexRoute = LogsIndexImport.update({
+const RequestsIndexRoute = RequestsIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LogsRouteRoute,
+  getParentRoute: () => RequestsRouteRoute,
+} as any)
+
+const ProvidersIndexRoute = ProvidersIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProvidersRouteRoute,
 } as any)
 
 const ApiKeysIndexRoute = ApiKeysIndexImport.update({
@@ -73,11 +87,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiKeysRouteImport
       parentRoute: typeof rootRoute
     }
-    '/logs': {
-      id: '/logs'
-      path: '/logs'
-      fullPath: '/logs'
-      preLoaderRoute: typeof LogsRouteImport
+    '/providers': {
+      id: '/providers'
+      path: '/providers'
+      fullPath: '/providers'
+      preLoaderRoute: typeof ProvidersRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/requests': {
+      id: '/requests'
+      path: '/requests'
+      fullPath: '/requests'
+      preLoaderRoute: typeof RequestsRouteImport
       parentRoute: typeof rootRoute
     }
     '/_dashboard/': {
@@ -94,12 +115,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiKeysIndexImport
       parentRoute: typeof ApiKeysRouteImport
     }
-    '/logs/': {
-      id: '/logs/'
+    '/providers/': {
+      id: '/providers/'
       path: '/'
-      fullPath: '/logs/'
-      preLoaderRoute: typeof LogsIndexImport
-      parentRoute: typeof LogsRouteImport
+      fullPath: '/providers/'
+      preLoaderRoute: typeof ProvidersIndexImport
+      parentRoute: typeof ProvidersRouteImport
+    }
+    '/requests/': {
+      id: '/requests/'
+      path: '/'
+      fullPath: '/requests/'
+      preLoaderRoute: typeof RequestsIndexImport
+      parentRoute: typeof RequestsRouteImport
     }
   }
 }
@@ -130,69 +158,98 @@ const ApiKeysRouteRouteWithChildren = ApiKeysRouteRoute._addFileChildren(
   ApiKeysRouteRouteChildren,
 )
 
-interface LogsRouteRouteChildren {
-  LogsIndexRoute: typeof LogsIndexRoute
+interface ProvidersRouteRouteChildren {
+  ProvidersIndexRoute: typeof ProvidersIndexRoute
 }
 
-const LogsRouteRouteChildren: LogsRouteRouteChildren = {
-  LogsIndexRoute: LogsIndexRoute,
+const ProvidersRouteRouteChildren: ProvidersRouteRouteChildren = {
+  ProvidersIndexRoute: ProvidersIndexRoute,
 }
 
-const LogsRouteRouteWithChildren = LogsRouteRoute._addFileChildren(
-  LogsRouteRouteChildren,
+const ProvidersRouteRouteWithChildren = ProvidersRouteRoute._addFileChildren(
+  ProvidersRouteRouteChildren,
+)
+
+interface RequestsRouteRouteChildren {
+  RequestsIndexRoute: typeof RequestsIndexRoute
+}
+
+const RequestsRouteRouteChildren: RequestsRouteRouteChildren = {
+  RequestsIndexRoute: RequestsIndexRoute,
+}
+
+const RequestsRouteRouteWithChildren = RequestsRouteRoute._addFileChildren(
+  RequestsRouteRouteChildren,
 )
 
 export interface FileRoutesByFullPath {
   '': typeof DashboardRouteRouteWithChildren
   '/api-keys': typeof ApiKeysRouteRouteWithChildren
-  '/logs': typeof LogsRouteRouteWithChildren
+  '/providers': typeof ProvidersRouteRouteWithChildren
+  '/requests': typeof RequestsRouteRouteWithChildren
   '/': typeof DashboardIndexRoute
   '/api-keys/': typeof ApiKeysIndexRoute
-  '/logs/': typeof LogsIndexRoute
+  '/providers/': typeof ProvidersIndexRoute
+  '/requests/': typeof RequestsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof DashboardIndexRoute
   '/api-keys': typeof ApiKeysIndexRoute
-  '/logs': typeof LogsIndexRoute
+  '/providers': typeof ProvidersIndexRoute
+  '/requests': typeof RequestsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_dashboard': typeof DashboardRouteRouteWithChildren
   '/api-keys': typeof ApiKeysRouteRouteWithChildren
-  '/logs': typeof LogsRouteRouteWithChildren
+  '/providers': typeof ProvidersRouteRouteWithChildren
+  '/requests': typeof RequestsRouteRouteWithChildren
   '/_dashboard/': typeof DashboardIndexRoute
   '/api-keys/': typeof ApiKeysIndexRoute
-  '/logs/': typeof LogsIndexRoute
+  '/providers/': typeof ProvidersIndexRoute
+  '/requests/': typeof RequestsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/api-keys' | '/logs' | '/' | '/api-keys/' | '/logs/'
+  fullPaths:
+    | ''
+    | '/api-keys'
+    | '/providers'
+    | '/requests'
+    | '/'
+    | '/api-keys/'
+    | '/providers/'
+    | '/requests/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api-keys' | '/logs'
+  to: '/' | '/api-keys' | '/providers' | '/requests'
   id:
     | '__root__'
     | '/_dashboard'
     | '/api-keys'
-    | '/logs'
+    | '/providers'
+    | '/requests'
     | '/_dashboard/'
     | '/api-keys/'
-    | '/logs/'
+    | '/providers/'
+    | '/requests/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   ApiKeysRouteRoute: typeof ApiKeysRouteRouteWithChildren
-  LogsRouteRoute: typeof LogsRouteRouteWithChildren
+  ProvidersRouteRoute: typeof ProvidersRouteRouteWithChildren
+  RequestsRouteRoute: typeof RequestsRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   ApiKeysRouteRoute: ApiKeysRouteRouteWithChildren,
-  LogsRouteRoute: LogsRouteRouteWithChildren,
+  ProvidersRouteRoute: ProvidersRouteRouteWithChildren,
+  RequestsRouteRoute: RequestsRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -207,7 +264,8 @@ export const routeTree = rootRoute
       "children": [
         "/_dashboard",
         "/api-keys",
-        "/logs"
+        "/providers",
+        "/requests"
       ]
     },
     "/_dashboard": {
@@ -222,10 +280,16 @@ export const routeTree = rootRoute
         "/api-keys/"
       ]
     },
-    "/logs": {
-      "filePath": "logs/route.tsx",
+    "/providers": {
+      "filePath": "providers/route.tsx",
       "children": [
-        "/logs/"
+        "/providers/"
+      ]
+    },
+    "/requests": {
+      "filePath": "requests/route.tsx",
+      "children": [
+        "/requests/"
       ]
     },
     "/_dashboard/": {
@@ -236,9 +300,13 @@ export const routeTree = rootRoute
       "filePath": "api-keys/index.tsx",
       "parent": "/api-keys"
     },
-    "/logs/": {
-      "filePath": "logs/index.tsx",
-      "parent": "/logs"
+    "/providers/": {
+      "filePath": "providers/index.tsx",
+      "parent": "/providers"
+    },
+    "/requests/": {
+      "filePath": "requests/index.tsx",
+      "parent": "/requests"
     }
   }
 }

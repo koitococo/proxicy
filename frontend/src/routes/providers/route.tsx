@@ -8,7 +8,7 @@ import {
   AppSidebarTrigger,
 } from '@/components/app/app-header'
 
-export const Route = createFileRoute('/logs')({
+export const Route = createFileRoute('/providers')({
   component: RouteComponent,
 })
 
@@ -19,7 +19,7 @@ function RouteComponent() {
         <AppHeaderPart>
           <AppSidebarTrigger />
           <AppSidebarSeparator />
-          <AppHeaderTitle>Logs</AppHeaderTitle>
+          <AppHeaderTitle>Providers</AppHeaderTitle>
         </AppHeaderPart>
       </AppHeader>
       <Outlet />
