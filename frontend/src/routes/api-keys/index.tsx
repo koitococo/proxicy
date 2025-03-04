@@ -4,8 +4,8 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
-import { ApiKeysDataTable } from '@/components/api-keys/data-table'
 import { queryClient } from '@/components/app/query-provider'
+import { ApiKeysDataTable } from '@/pages/api-keys/data-table'
 
 const apiKeysQueryOptions = ({ includeRevoked = false }: { includeRevoked?: boolean }) =>
   queryOptions({

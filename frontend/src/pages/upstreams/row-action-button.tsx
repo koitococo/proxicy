@@ -16,7 +16,8 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import type { Upstream } from '@/components/upstreams/columns'
+
+import type { Upstream } from './columns'
 
 export function RowActionButton({ data }: { data: Upstream }) {
   const queryClient = useQueryClient()

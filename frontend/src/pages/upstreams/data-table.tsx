@@ -1,6 +1,7 @@
 import { DataTable } from '@/components/ui/data-table'
-import { AddButton } from '@/components/upstreams/add-button'
-import { columns, type Upstream } from '@/components/upstreams/columns'
+
+import { AddButton } from './add-button'
+import { columns, type Upstream } from './columns'
 
 export function UpstreamsDataTable({ data }: { data: Upstream[] }) {
   return (

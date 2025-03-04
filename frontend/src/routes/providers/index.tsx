@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { api } from '@/lib/api'
 import { queryClient } from '@/components/app/query-provider'
-import { UpstreamsDataTable } from '@/components/upstreams/data-table'
+import { UpstreamsDataTable } from '@/pages/upstreams/data-table'
 
 const upstreamQueryOptions = () =>
   queryOptions({

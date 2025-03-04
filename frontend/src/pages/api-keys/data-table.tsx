@@ -1,8 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { Settings2Icon } from 'lucide-react'
 
-import { AddButton } from '@/components/api-keys/add-button'
-import { columns, type ApiKey } from '@/components/api-keys/columns'
 import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/ui/data-table'
 import {
@@ -11,6 +9,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+
+import { AddButton } from './add-button'
+import { columns, type ApiKey } from './columns'
 
 export function ApiKeysDataTable({ data, includeRevoked }: { data: ApiKey[]; includeRevoked: boolean }) {
   return (

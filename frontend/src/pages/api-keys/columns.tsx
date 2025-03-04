@@ -2,8 +2,9 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 
 import type { api } from '@/lib/api'
-import { ApiKeyCopyButton } from '@/components/api-keys/api-key-copy-button'
-import { RowActionButton } from '@/components/api-keys/row-action-button'
+
+import { ApiKeyCopyButton } from './api-key-copy-button'
+import { RowActionButton } from './row-action-button'
 
 export type ApiKey = Exclude<Awaited<ReturnType<typeof api.admin.apiKey.get>>['data'], null>[number]
 

@@ -1,8 +1,9 @@
 import type { ColumnDef } from '@tanstack/react-table'
 
 import type { api } from '@/lib/api'
-import { ApiKeyCopyButton } from '@/components/api-keys/api-key-copy-button'
-import { RowActionButton } from '@/components/upstreams/row-action-button'
+import { ApiKeyCopyButton } from '@/pages/api-keys/api-key-copy-button'
+
+import { RowActionButton } from './row-action-button'
 
 export type Upstream = Exclude<Awaited<ReturnType<typeof api.admin.upstream.get>>['data'], null>[number]
 

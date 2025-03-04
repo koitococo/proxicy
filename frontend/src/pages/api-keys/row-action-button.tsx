@@ -4,7 +4,6 @@ import { toast } from 'sonner'
 import { useCopyToClipboard } from 'usehooks-ts'
 
 import { api } from '@/lib/api'
-import type { ApiKey } from '@/components/api-keys/columns'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +23,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+
+import type { ApiKey } from './columns'
 
 export const RowActionButton = ({ data }: { data: ApiKey }) => {
   const [, copy] = useCopyToClipboard()
