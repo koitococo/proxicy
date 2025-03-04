@@ -101,6 +101,9 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: () => void }) 
               <FormControl>
                 <ExpireDatePicker value={field.value} onValueChange={field.onChange} />
               </FormControl>
+              <FormDescription>
+                Choose an expiration date for this API key, or select no expiration date.
+              </FormDescription>
             </FormItem>
           )}
         />
