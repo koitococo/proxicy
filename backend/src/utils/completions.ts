@@ -27,11 +27,3 @@ export async function addCompletions(
     ...c,
   });
 }
-
-export async function queryUsage(apiKey: string) {
-  const key = await findApiKey(apiKey);
-  if (key === null) {
-    return null;
-  }
-  return sumCompletionTokenUsage(key.id, undefined);
-}

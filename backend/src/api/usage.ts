@@ -2,29 +2,31 @@ import { Elysia, t } from "elysia";
 
 import { apiKeyPlugin } from "../plugins/apiKeyPlugin";
 import { consola } from "consola";
-import { queryUsage } from "../utils/completions";
+import { findApiKey, sumCompletionTokenUsage } from "@/db";
 
 const logger = consola.withTag("usageQuery");
 
 export const usageQueryApi = new Elysia({
   detail: {
-    security: [{ bearerAuth: [] }],
+    security: [{ apiKey: [] }],
   },
 })
   .use(apiKeyPlugin)
   .get(
     "/usage",
-    async ({ error, query: { userKey } }) => {
-      if (userKey === undefined) {
-        return error(400, "missing user key");
+    async ({ error, bearer }) => {
+      if (bearer === undefined) {
+        return error(500);
       }
-      logger.verbose("queryUsage", userKey);
-      return queryUsage(userKey);
+
+      logger.verbose("queryUsage", bearer);
+      const key = await findApiKey(bearer);
+      if (key === null) {
+        return null;
+      }
+      return sumCompletionTokenUsage(key.id);
     },
     {
       checkApiKey: true,
-      query: t.Object({
-        userKey: t.String(),
-      }),
     },
   );

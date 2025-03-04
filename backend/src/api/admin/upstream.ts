@@ -1,13 +1,6 @@
 import { deleteUpstream, insertUpstream, listUpstreams } from "@/db";
 import Elysia, { t } from "elysia";
 
-const tUpstreamCreate = t.Object({
-  model: t.String(),
-  name: t.String(),
-  url: t.String(),
-  apiKey: t.Optional(t.String()),
-});
-
 export const adminUpstream = new Elysia()
   .get("/upstream", async (_) => {
     return await listUpstreams();
@@ -22,7 +15,12 @@ export const adminUpstream = new Elysia()
       return r;
     },
     {
-      body: tUpstreamCreate,
+      body: t.Object({
+        model: t.String(),
+        name: t.String(),
+        url: t.String(),
+        apiKey: t.Optional(t.String()),
+      }),
     },
   )
   .delete(

@@ -2,10 +2,12 @@ import Elysia, { t } from "elysia";
 import { apiKeyPlugin } from "@/plugins/apiKeyPlugin";
 import { adminApiKey } from "./apiKey";
 import { adminUpstream } from "./upstream";
+import { adminCompletions } from "./completions";
+import { adminUsage } from "./usage";
 
 export const routes = new Elysia({
   detail: {
-    security: [{ bearerAuth: [] }],
+    security: [{ adminSecret: [] }],
   },
 })
   .use(apiKeyPlugin)
@@ -14,6 +16,8 @@ export const routes = new Elysia({
       app
         .use(adminApiKey)
         .use(adminUpstream)
+        .use(adminCompletions)
+        .use(adminUsage)
         .get("/", () => true, { detail: { description: "Check whether the admin secret is valid." } }),
     ),
   );

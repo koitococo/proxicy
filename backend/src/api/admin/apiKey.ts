@@ -1,5 +1,5 @@
-import { findApiKey, listApiKeys } from "@/db";
-import { generateApiKey, newApiKey, revokeApiKey } from "@/utils/apiKey";
+import { findApiKey, listApiKeys, upsertApiKey } from "@/db";
+import { generateApiKey } from "@/utils/apiKey";
 import { Elysia, t } from "elysia";
 
 export const adminApiKey = new Elysia()
@@ -26,7 +26,11 @@ export const adminApiKey = new Elysia()
     "/apiKey",
     async ({ body, error }) => {
       const key = generateApiKey();
-      const r = await newApiKey(key, body.expires_at, body.comment);
+      const r = await upsertApiKey({
+        key,
+        comment: body.comment,
+        expires_at: body.expires_at,
+      });
       if (r === null) {
         return error(500, "Failed to create key");
       }
@@ -45,7 +49,11 @@ export const adminApiKey = new Elysia()
     "/apiKey/:key",
     async ({ error, params }) => {
       const { key } = params;
-      const r = await revokeApiKey(key);
+      const r = await upsertApiKey({
+        key,
+        revoked: true,
+        updated_at: new Date(),
+      });
       if (r === null) {
         return error(404, "Key not found");
       }

@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
-import { and, eq, not, sum } from "drizzle-orm";
+import { and, asc, count, eq, not, sum } from "drizzle-orm";
 import consola from "consola";
 
 const globalThis_ = globalThis as typeof globalThis & {
@@ -144,7 +144,7 @@ export async function insertCompletion(c: CompletionInsert): Promise<Completion 
  * @param apiKeyId key id, referencing to id colume in api keys table
  * @returns total prompt tokens and completion tokens used by the api key
  */
-export async function sumCompletionTokenUsage(apiKeyId?: number, model?: string) {
+export async function sumCompletionTokenUsage(apiKeyId?: number) {
   logger.verbose("sumCompletionTokenUsage", apiKeyId);
   const r = await db
     .select({
@@ -152,11 +152,69 @@ export async function sumCompletionTokenUsage(apiKeyId?: number, model?: string)
       total_completion_tokens: sum(schema.CompletionsTable.completion_tokens),
     })
     .from(schema.CompletionsTable)
+    .where(apiKeyId !== undefined ? eq(schema.CompletionsTable.apiKeyId, apiKeyId) : undefined);
+  return r.length === 1 ? r[0] : null;
+}
+
+/**
+ * list completions in database
+ * @param offset offset from first record
+ * @param limit number of records to return
+ * @param apiKeyId optional, filter by api key id
+ * @param upstreamId optional, filter by upstream id
+ * @returns list of completions
+ */
+export async function listCompletions(
+  offset: number,
+  limit: number,
+  apiKeyId?: number,
+  upstreamId?: number,
+): Promise<PartialList<Completion>> {
+  const sq = db
+    .select({
+      id: schema.CompletionsTable.id,
+    })
+    .from(schema.CompletionsTable)
     .where(
       and(
+        not(schema.CompletionsTable.deleted),
         apiKeyId !== undefined ? eq(schema.CompletionsTable.apiKeyId, apiKeyId) : undefined,
-        model !== undefined ? eq(schema.CompletionsTable.model, model) : undefined,
+        upstreamId !== undefined ? eq(schema.CompletionsTable.upstreamId, upstreamId) : undefined,
       ),
-    );
+    )
+    .offset(offset)
+    .limit(limit)
+    .as("sq");
+  const r = await db
+    .select()
+    .from(schema.CompletionsTable)
+    .innerJoin(sq, eq(schema.CompletionsTable.id, sq.id))
+    .orderBy(asc(schema.CompletionsTable.id));
+  const total = await db
+    .select({
+      total: count(schema.CompletionsTable.id),
+    })
+    .from(schema.CompletionsTable);
+  if (total.length !== 1) {
+    throw new Error("total count failed");
+  }
+  return {
+    data: r.map((x) => x.completions),
+    total: total[0].total,
+    from: offset,
+  };
+}
+/**
+ * delete completion from database
+ * @param id completion id
+ * @returns deleted record of completion, null if not found
+ */
+export async function deleteCompletion(id: number) {
+  logger.verbose("deleteCompletion", id);
+  const r = await db
+    .update(schema.CompletionsTable)
+    .set({ deleted: true })
+    .where(eq(schema.CompletionsTable.id, id))
+    .returning();
   return r.length === 1 ? r[0] : null;
 }

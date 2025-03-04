@@ -19,7 +19,7 @@ const app = new Elysia()
       documentation: {
         components: {
           securitySchemes: {
-            bearerAuth: {
+            adminSecret: {
               type: "http",
               scheme: "bearer",
             },

@@ -39,6 +39,9 @@ export const completionsApi = new Elysia({
   .post(
     "/completions",
     async function* ({ body, error, bearer }) {
+      if (bearer === undefined) {
+        return error(500);
+      }
       const upstream = await selectUpstream(body.model);
       if (!upstream) {
         return error(404, "Model not found");
