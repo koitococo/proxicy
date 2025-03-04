@@ -3,17 +3,16 @@ import { CheckIcon, CopyIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCopyToClipboard } from 'usehooks-ts'
 
-import type { ApiKey } from '@/components/api-keys/columns'
 import { Button } from '@/components/ui/button'
 
-export const ApiKeyCopyButton = ({ data }: { data: ApiKey }) => {
-  const hiddenValue = data.key.replace(/(.{8})(.*)(.{4})/, '$1******$3')
+export const ApiKeyCopyButton = ({ apiKey, revoked }: { apiKey: string; revoked?: boolean }) => {
+  const hiddenValue = apiKey.replace(/(.{7})(.*)(.{4})/, '$1******$3')
   const [copied, setCopied] = useState(false)
   const [, copy] = useCopyToClipboard()
 
   const Icon = copied ? CheckIcon : CopyIcon
 
-  return data.revoked ? (
+  return revoked ? (
     <div className="flex items-center gap-1.5">
       <span className="tabular-nums line-through opacity-50">{hiddenValue}</span>
     </div>
@@ -24,7 +23,7 @@ export const ApiKeyCopyButton = ({ data }: { data: ApiKey }) => {
       className="group -mx-2 !px-2 font-normal"
       title="click to copy"
       onClick={() => {
-        copy(data.key)
+        copy(apiKey)
           .then(() => {
             setCopied(true)
             setTimeout(() => {

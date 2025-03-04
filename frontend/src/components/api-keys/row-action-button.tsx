@@ -39,7 +39,7 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
     onMutate: async (key) => {
       await queryClient.cancelQueries({ queryKey: ['apiKeys'] })
       const prevAllItems = (queryClient.getQueryData(['apiKeys', { includeRevoked: true }]) || []) as ApiKey[]
-      const prevItem = (queryClient.getQueryData(['apiKeys', { includeRevoked: false }]) || []) as ApiKey[]
+      const prevItems = (queryClient.getQueryData(['apiKeys', { includeRevoked: false }]) || []) as ApiKey[]
       queryClient.setQueryData(
         ['apiKeys', { includeRevoked: true }],
         prevAllItems.map((item) => {
@@ -49,19 +49,19 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
       )
       queryClient.setQueryData(
         ['apiKeys', { includeRevoked: false }],
-        prevItem.filter((item) => item.key !== key),
+        prevItems.filter((item) => item.key !== key),
       )
-      return { prevAllItems, prevItem }
+      return { prevAllItems, prevItems }
     },
     onError: (error, _, context) => {
       toast.error(error.message)
       if (context) {
         queryClient.setQueryData(['apiKeys', { includeRevoked: true }], context.prevAllItems)
-        queryClient.setQueryData(['apiKeys', { includeRevoked: false }], context.prevItem)
+        queryClient.setQueryData(['apiKeys', { includeRevoked: false }], context.prevItems)
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
     },
   })
 
@@ -107,12 +107,7 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
-            onClick={() => {
-              mutate(data.key)
-            }}
-          >
+          <AlertDialogAction variant="destructive" onClick={() => mutate(data.key)}>
             Continue
           </AlertDialogAction>
         </AlertDialogFooter>

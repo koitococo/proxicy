@@ -33,8 +33,8 @@ function RouteComponent() {
   const { data } = useSuspenseQuery(apiKeysQueryOptions({ includeRevoked }))
 
   return (
-    <main>
-      <div className="mx-auto max-w-6xl px-4">
+    <main className="px-4">
+      <div className="mx-auto max-w-6xl">
         <ApiKeysDataTable data={data} includeRevoked={includeRevoked} />
       </div>
     </main>

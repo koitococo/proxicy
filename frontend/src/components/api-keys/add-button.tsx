@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addDays, format } from 'date-fns'
 import { CalendarIcon, PlusIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
@@ -20,7 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -66,8 +67,9 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: () => void }) 
       return data
     },
     onSuccess: () => {
-      onSubmitSuccessful()
       queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
+      toast.success('API key created.')
+      onSubmitSuccessful()
     },
   })
 
@@ -89,6 +91,7 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: () => void }) 
                 <Input {...field} />
               </FormControl>
               <FormDescription>Enter a comment to help identify this API key.</FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -104,6 +107,7 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: () => void }) 
               <FormDescription>
                 Choose an expiration date for this API key, or select no expiration date.
               </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />

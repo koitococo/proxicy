@@ -15,7 +15,7 @@ export const columns: ColumnDef<ApiKey>[] = [
   {
     accessorKey: 'key',
     header: 'Key',
-    cell: ({ row }) => <ApiKeyCopyButton data={row.original} />,
+    cell: ({ row }) => <ApiKeyCopyButton apiKey={row.original.key} revoked={row.original.revoked} />,
   },
   {
     accessorKey: 'created_at',
