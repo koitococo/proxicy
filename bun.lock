@@ -46,6 +46,7 @@
         "@tanstack/react-table": "^8.21.2",
         "@tanstack/router-devtools": "^1.104.3",
         "@tanstack/router-plugin": "^1.105.0",
+        "@tanstack/zod-adapter": "^1.112.11",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "date-fns": "^4.1.0",
@@ -534,6 +535,8 @@
     "@tanstack/table-core": ["@tanstack/table-core@8.21.2", "https://registry.npmmirror.com/@tanstack/table-core/-/table-core-8.21.2.tgz", {}, "sha512-uvXk/U4cBiFMxt+p9/G7yUWI/UbHYbyghLCjlpWZ3mLeIZiUBSKcUnw9UnKkdRz7Z/N4UBuFLWQdJCjUe7HjvA=="],
 
     "@tanstack/virtual-file-routes": ["@tanstack/virtual-file-routes@1.99.0", "https://registry.npmmirror.com/@tanstack/virtual-file-routes/-/virtual-file-routes-1.99.0.tgz", {}, "sha512-XvX8bfdo4CYiCW+ItVdBfCorh3PwQFqYqd7ll+XKWiWOJpqUGIG7VlziVavARZpUySiY2VBlHadiUYS7jhgjRg=="],
+
+    "@tanstack/zod-adapter": ["@tanstack/zod-adapter@1.112.11", "https://registry.npmmirror.com/@tanstack/zod-adapter/-/zod-adapter-1.112.11.tgz", { "peerDependencies": { "@tanstack/react-router": ">=1.43.2", "zod": "^3.23.8" } }, "sha512-hpwtnB5usgmRKiziHitEAuNX4FyoR2/QODHFVAAEIcnEjKQb1qfnC22+TYtivgn54ZsKkClNSlbV9jDQL5+Kwg=="],
 
     "@testing-library/dom": ["@testing-library/dom@10.4.0", "https://registry.npmmirror.com/@testing-library/dom/-/dom-10.4.0.tgz", { "dependencies": { "@babel/code-frame": "^7.10.4", "@babel/runtime": "^7.12.5", "@types/aria-query": "^5.0.1", "aria-query": "5.3.0", "chalk": "^4.1.0", "dom-accessibility-api": "^0.5.9", "lz-string": "^1.5.0", "pretty-format": "^27.0.2" } }, "sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ=="],
 

@@ -38,19 +38,27 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
     },
     onMutate: async (key) => {
       await queryClient.cancelQueries({ queryKey: ['apiKeys'] })
-      const previousItems = queryClient.getQueryData(['apiKeys']) as ApiKey[]
+      const prevAllItems = (queryClient.getQueryData(['apiKeys', { includeRevoked: true }]) || []) as ApiKey[]
+      const prevItem = (queryClient.getQueryData(['apiKeys', { includeRevoked: false }]) || []) as ApiKey[]
       queryClient.setQueryData(
-        ['apiKeys'],
-        previousItems.map((item) => {
+        ['apiKeys', { includeRevoked: true }],
+        prevAllItems.map((item) => {
           if (item.key !== key) return item
           return { ...item, revoked: true }
         }),
       )
-      return { previousItems }
+      queryClient.setQueryData(
+        ['apiKeys', { includeRevoked: false }],
+        prevItem.filter((item) => item.key !== key),
+      )
+      return { prevAllItems, prevItem }
     },
     onError: (error, _, context) => {
       toast.error(error.message)
-      if (context) queryClient.setQueryData(['apiKeys'], context.previousItems)
+      if (context) {
+        queryClient.setQueryData(['apiKeys', { includeRevoked: true }], context.prevAllItems)
+        queryClient.setQueryData(['apiKeys', { includeRevoked: false }], context.prevItem)
+      }
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
