@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addDays, format } from 'date-fns'
 import { CalendarIcon, PlusIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
@@ -26,6 +25,7 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
+import { useCopy } from '@/hooks/use-copy'
 
 const addKeySchema = z.object({
   comment: z.string().min(1, { message: 'Comment is required' }),
@@ -35,10 +35,8 @@ const addKeySchema = z.object({
 type AddKeySchema = z.infer<typeof addKeySchema>
 
 export function AddButton({ ...props }: ComponentProps<typeof Button>) {
-  const [open, setOpen] = useState(false)
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button {...props}>
           <PlusIcon />
@@ -46,17 +44,37 @@ export function AddButton({ ...props }: ComponentProps<typeof Button>) {
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create a new API key</DialogTitle>
-          <DialogDescription>Create a new API key for chat completion.</DialogDescription>
-        </DialogHeader>
-        <AddKeyForm onSubmitSuccessful={() => setOpen(false)} />
+        <AddDialogContent />
       </DialogContent>
     </Dialog>
   )
 }
 
-function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: () => void }) {
+function AddDialogContent() {
+  const [createdKey, setCreatedKey] = useState<string>('')
+
+  return !createdKey ? (
+    <>
+      <DialogHeader>
+        <DialogTitle>Create a new API key</DialogTitle>
+        <DialogDescription>Create a new API key for chat completion.</DialogDescription>
+      </DialogHeader>
+      <AddKeyForm onSubmitSuccessful={(key) => setCreatedKey(key)} />
+    </>
+  ) : (
+    <>
+      <DialogHeader>
+        <DialogTitle>API key created</DialogTitle>
+        <DialogDescription>
+          Your new API key has been created. Please copy it and store it in a safe place.
+        </DialogDescription>
+        <KeyCreatedContent apiKey={createdKey} />
+      </DialogHeader>
+    </>
+  )
+}
+
+function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: (key: string) => void }) {
   const queryClient = useQueryClient()
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: async (values: AddKeySchema) => {
@@ -66,10 +84,9 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: () => void }) 
       }
       return data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
-      toast.success('API key created.')
-      onSubmitSuccessful()
+      onSubmitSuccessful(data.key)
     },
   })
 
@@ -185,6 +202,26 @@ function ExpireDatePicker({ value, onValueChange }: { value?: Date; onValueChang
           />
         </PopoverContent>
       </Popover>
+    </div>
+  )
+}
+
+function KeyCreatedContent({ apiKey }: { apiKey: string }) {
+  const { copy, copied } = useCopy()
+
+  return (
+    <div className="grid gap-4">
+      <Input value={apiKey} readOnly />
+      <DialogFooter>
+        <DialogClose asChild>
+          <Button type="button" variant="outline">
+            Close
+          </Button>
+        </DialogClose>
+        <Button type="button" onClick={() => copy(apiKey)}>
+          {copied ? 'Copied!' : 'Copy'}
+        </Button>
+      </DialogFooter>
     </div>
   )
 }

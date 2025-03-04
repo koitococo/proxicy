@@ -1,14 +1,11 @@
-import { useState } from 'react'
 import { CheckIcon, CopyIcon } from 'lucide-react'
-import { toast } from 'sonner'
-import { useCopyToClipboard } from 'usehooks-ts'
 
 import { Button } from '@/components/ui/button'
+import { useCopy } from '@/hooks/use-copy'
 
 export const ApiKeyCopyButton = ({ apiKey, revoked }: { apiKey: string; revoked?: boolean }) => {
   const hiddenValue = apiKey.replace(/(.{7})(.*)(.{4})/, '$1******$3')
-  const [copied, setCopied] = useState(false)
-  const [, copy] = useCopyToClipboard()
+  const { copy, copied } = useCopy()
 
   const Icon = copied ? CheckIcon : CopyIcon
 
@@ -22,16 +19,7 @@ export const ApiKeyCopyButton = ({ apiKey, revoked }: { apiKey: string; revoked?
       size="sm"
       className="group -mx-2 !px-2 font-normal"
       title="click to copy"
-      onClick={() => {
-        copy(apiKey)
-          .then(() => {
-            setCopied(true)
-            setTimeout(() => {
-              setCopied(false)
-            }, 2000)
-          })
-          .catch((err) => toast.error(`Failed to copy: ${err}`))
-      }}
+      onClick={() => copy(apiKey)}
     >
       <span className="tabular-nums">{hiddenValue}</span>
       <span className="sr-only">Copy API key</span>
