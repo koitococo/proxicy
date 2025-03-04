@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ComponentProps } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addDays, format } from 'date-fns'
@@ -33,13 +33,13 @@ const addKeySchema = z.object({
 
 type AddKeySchema = z.infer<typeof addKeySchema>
 
-export function AddButton() {
+export function AddButton({ ...props }: ComponentProps<typeof Button>) {
   const [open, setOpen] = useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button {...props}>
           <PlusIcon />
           New API Key
         </Button>
