@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@elysiajs/cors": "^1.2.0",
-    "@elysiajs/opentelemetry": "^1.2.0",
     "@elysiajs/server-timing": "^1.2.1",
     "@elysiajs/swagger": "^1.2.2",
     "consola": "^3.4.0",
@@ -27,7 +26,6 @@
     "dev": "bun --watch src/index.ts",
     "build": "bun build src/index.ts --target bun --outdir ./dist",
     "start": "NODE_ENV=production bun dist/index.js",
-    "test": "bun test",
     "format": "biome format --write",
     "check": "biome check --write",
     "orm:push": "bunx drizzle-kit push",

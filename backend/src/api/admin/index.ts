@@ -1,4 +1,4 @@
-import Elysia, { t } from "elysia";
+import { Elysia } from "elysia";
 import { apiKeyPlugin } from "@/plugins/apiKeyPlugin";
 import { adminApiKey } from "./apiKey";
 import { adminUpstream } from "./upstream";

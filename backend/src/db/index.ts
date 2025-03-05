@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
 import { and, asc, count, eq, not, sum } from "drizzle-orm";
 import consola from "consola";
+import { DATABASE_URL } from "@/utils/config";
 
 const globalThis_ = globalThis as typeof globalThis & {
   db: ReturnType<typeof drizzle>;
@@ -12,7 +13,7 @@ const logger = consola.withTag("database");
 const db = (() => {
   if (!globalThis_.db) {
     globalThis_.db = drizzle({
-      connection: process.env.DATABASE_URL || "postgres://localhost:5432",
+      connection: DATABASE_URL,
       schema: schema,
     });
     logger.success("connection created");
