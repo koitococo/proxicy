@@ -4,7 +4,8 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
-import { formatApiError, removeUndefinedFields } from '@/lib/utils'
+import { formatError } from '@/lib/error'
+import { removeUndefinedFields } from '@/lib/utils'
 import { AppErrorComponent } from '@/components/app/app-error'
 import { queryClient } from '@/components/app/query-provider'
 import type { ChatRequest } from '@/pages/requests/columns'
@@ -31,7 +32,7 @@ const requestsQueryOptions = ({ page, pageSize, apiKeyId, upstreamId }: Requests
           ...removeUndefinedFields({ apiKeyId, upstreamId }),
         },
       })
-      if (error) throw formatApiError(error, 'An error occurred while fetching requests.')
+      if (error) throw formatError(error, 'An error occurred while fetching requests.')
       const { data, total } = rawData
       return { data: data as ChatRequest[], total }
     },

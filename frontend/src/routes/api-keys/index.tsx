@@ -4,7 +4,7 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
-import { formatApiError } from '@/lib/utils'
+import { formatError } from '@/lib/error'
 import { AppErrorComponent } from '@/components/app/app-error'
 import { queryClient } from '@/components/app/query-provider'
 import { ApiKeysDataTable } from '@/pages/api-keys/data-table'
@@ -14,7 +14,7 @@ const apiKeysQueryOptions = ({ includeRevoked = false }: { includeRevoked?: bool
     queryKey: ['apiKeys', { includeRevoked }],
     queryFn: async () => {
       const { data, error } = await api.admin.apiKey.get({ query: { includeRevoked } })
-      if (error) throw formatApiError(error, 'An error occurred while fetching API keys.')
+      if (error) throw formatError(error, 'An error occurred while fetching API keys.')
       return data
     },
   })

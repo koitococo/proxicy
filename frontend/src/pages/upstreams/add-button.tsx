@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
+import { newApiError } from '@/lib/error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -58,9 +59,7 @@ function AddUpstreamForm({ onSubmitSuccessful }: { onSubmitSuccessful: () => voi
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: async (values: AddUpstreamSchema) => {
       const { error } = await api.admin.upstream.post(values)
-      if (error) {
-        throw new Error(typeof error.value === 'string' ? error.value : error.value.message)
-      }
+      if (error) throw newApiError(error)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['upstreams'] })

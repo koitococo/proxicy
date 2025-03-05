@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { useCopyToClipboard } from 'usehooks-ts'
 
 import { api } from '@/lib/api'
+import { newApiError } from '@/lib/error'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,9 +34,7 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
   const { mutate } = useMutation({
     mutationFn: async (key: string) => {
       const { error } = await api.admin.apiKey({ key }).delete()
-      if (error) {
-        throw new Error(typeof error.value === 'string' ? error.value : error.value.message)
-      }
+      if (error) throw newApiError(error)
     },
     onMutate: async (key) => {
       await queryClient.cancelQueries({ queryKey: ['apiKeys'] })

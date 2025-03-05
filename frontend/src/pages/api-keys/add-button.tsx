@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
+import { newApiError } from '@/lib/error'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -79,9 +80,7 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: (key: string) 
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: async (values: AddKeySchema) => {
       const { data, error } = await api.admin.apiKey.post(values)
-      if (error) {
-        throw new Error(typeof error.value === 'string' ? error.value : error.value.message)
-      }
+      if (error) throw newApiError(error)
       return data
     },
     onSuccess: (data) => {

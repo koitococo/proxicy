@@ -3,6 +3,7 @@ import { MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { api } from '@/lib/api'
+import { newApiError } from '@/lib/error'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,9 +25,7 @@ export function RowActionButton({ data }: { data: Upstream }) {
   const { mutate } = useMutation({
     mutationFn: async (id: number) => {
       const { error } = await api.admin.upstream({ id }).delete()
-      if (error) {
-        throw new Error(typeof error.value === 'string' ? error.value : error.value.message)
-      }
+      if (error) throw newApiError(error)
     },
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ['upstreams'] })

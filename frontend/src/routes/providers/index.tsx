@@ -2,7 +2,7 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
 import { api } from '@/lib/api'
-import { formatApiError } from '@/lib/utils'
+import { formatError } from '@/lib/error'
 import { AppErrorComponent } from '@/components/app/app-error'
 import { queryClient } from '@/components/app/query-provider'
 import { UpstreamsDataTable } from '@/pages/upstreams/data-table'
@@ -12,7 +12,7 @@ const upstreamQueryOptions = () =>
     queryKey: ['upstreams'],
     queryFn: async () => {
       const { data, error } = await api.admin.upstream.get()
-      if (error) throw formatApiError(error, 'An error occurred while fetching providers.')
+      if (error) throw formatError(error, 'An error occurred while fetching providers.')
       return data
     },
   })
