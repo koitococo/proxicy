@@ -4,7 +4,8 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
-import { removeUndefinedFields } from '@/lib/utils'
+import { formatApiError, removeUndefinedFields } from '@/lib/utils'
+import { AppErrorComponent } from '@/components/app/app-error'
 import { queryClient } from '@/components/app/query-provider'
 import type { ChatRequest } from '@/pages/requests/columns'
 import { RequestsDataTable } from '@/pages/requests/data-table'
@@ -30,7 +31,7 @@ const requestsQueryOptions = ({ page, pageSize, apiKeyId, upstreamId }: Requests
           ...removeUndefinedFields({ apiKeyId, upstreamId }),
         },
       })
-      if (error) throw new Error('An error occurred while fetching requests.')
+      if (error) throw formatApiError(error, 'An error occurred while fetching requests.')
       const { data, total } = rawData
       return { data: data as ChatRequest[], total }
     },
@@ -41,6 +42,7 @@ export const Route = createFileRoute('/requests/')({
   loaderDeps: ({ search: { page, pageSize, apiKeyId, upstreamId } }) => ({ page, pageSize, apiKeyId, upstreamId }),
   loader: ({ deps }) => queryClient.ensureQueryData(requestsQueryOptions(deps)),
   component: RouteComponent,
+  errorComponent: AppErrorComponent,
 })
 
 function RouteComponent() {

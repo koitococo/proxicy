@@ -4,6 +4,8 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { z } from 'zod'
 
 import { api } from '@/lib/api'
+import { formatApiError } from '@/lib/utils'
+import { AppErrorComponent } from '@/components/app/app-error'
 import { queryClient } from '@/components/app/query-provider'
 import { ApiKeysDataTable } from '@/pages/api-keys/data-table'
 
@@ -12,7 +14,7 @@ const apiKeysQueryOptions = ({ includeRevoked = false }: { includeRevoked?: bool
     queryKey: ['apiKeys', { includeRevoked }],
     queryFn: async () => {
       const { data, error } = await api.admin.apiKey.get({ query: { includeRevoked } })
-      if (error) throw new Error('An error occurred while fetching API keys.')
+      if (error) throw formatApiError(error, 'An error occurred while fetching API keys.')
       return data
     },
   })
@@ -26,6 +28,7 @@ export const Route = createFileRoute('/api-keys/')({
   loaderDeps: ({ search: { includeRevoked } }) => ({ includeRevoked }),
   loader: ({ deps: { includeRevoked } }) => queryClient.ensureQueryData(apiKeysQueryOptions({ includeRevoked })),
   component: RouteComponent,
+  errorComponent: AppErrorComponent,
 })
 
 function RouteComponent() {
