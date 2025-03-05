@@ -224,3 +224,17 @@ export async function deleteCompletion(id: number) {
     .returning();
   return r.length === 1 ? r[0] : null;
 }
+
+/**
+ * find completion in database by id
+ * @param id completion id
+ * @returns db record of completion, null if not found
+ */
+export async function findCompletion(id: number): Promise<Completion | null> {
+  logger.verbose("findCompletion", id);
+  const r = await db
+    .select()
+    .from(schema.CompletionsTable)
+    .where(and(eq(schema.CompletionsTable.id, id), not(schema.CompletionsTable.deleted)));
+  return r.length === 1 ? r[0] : null;
+}

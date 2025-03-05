@@ -1,4 +1,4 @@
-import { deleteCompletion, listCompletions } from "@/db";
+import { deleteCompletion, findCompletion, listCompletions } from "@/db";
 import { Elysia, t } from "elysia";
 
 export const adminCompletions = new Elysia()
@@ -13,6 +13,22 @@ export const adminCompletions = new Elysia()
         limit: t.Optional(t.Integer()),
         apiKeyId: t.Optional(t.Integer()),
         upstreamId: t.Optional(t.Integer()),
+      }),
+    },
+  )
+  .get(
+    "/completions/:id",
+    async ({ error, params }) => {
+      const { id } = params;
+      const r = await findCompletion(id);
+      if (r === null) {
+        return error(404, "Completion not found");
+      }
+      return r;
+    },
+    {
+      params: t.Object({
+        id: t.Integer(),
       }),
     },
   )
