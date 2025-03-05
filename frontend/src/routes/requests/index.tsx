@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { api } from '@/lib/api'
 import { removeUndefinedFields } from '@/lib/utils'
 import { queryClient } from '@/components/app/query-provider'
+import type { ChatRequest } from '@/pages/requests/columns'
 import { RequestsDataTable } from '@/pages/requests/data-table'
 
 const requestsSearchSchema = z.object({
@@ -13,6 +14,7 @@ const requestsSearchSchema = z.object({
   pageSize: z.number().catch(20),
   apiKeyId: z.number().optional(),
   upstreamId: z.number().optional(),
+  selectedRequestId: z.number().optional(),
 })
 
 type RequestsSearchSchema = z.infer<typeof requestsSearchSchema>
@@ -21,7 +23,7 @@ const requestsQueryOptions = ({ page, pageSize, apiKeyId, upstreamId }: Requests
   queryOptions({
     queryKey: ['requests', { page, pageSize, apiKeyId, upstreamId }],
     queryFn: async () => {
-      const { data, error } = await api.admin.completions.get({
+      const { data: rawData, error } = await api.admin.completions.get({
         query: {
           offset: (page - 1) * pageSize,
           limit: pageSize,
@@ -29,22 +31,23 @@ const requestsQueryOptions = ({ page, pageSize, apiKeyId, upstreamId }: Requests
         },
       })
       if (error) throw new Error('An error occurred while fetching requests.')
-      return data
+      const { data, total } = rawData
+      return { data: data as ChatRequest[], total }
     },
   })
 
 export const Route = createFileRoute('/requests/')({
   validateSearch: zodValidator(requestsSearchSchema),
-  loaderDeps: ({ search }) => ({ ...search }),
+  loaderDeps: ({ search: { page, pageSize, apiKeyId, upstreamId } }) => ({ page, pageSize, apiKeyId, upstreamId }),
   loader: ({ deps }) => queryClient.ensureQueryData(requestsQueryOptions(deps)),
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const search = Route.useSearch()
+  const { page, pageSize, apiKeyId, upstreamId } = Route.useSearch()
   const {
     data: { data, total },
-  } = useSuspenseQuery(requestsQueryOptions(search))
+  } = useSuspenseQuery(requestsQueryOptions({ page, pageSize, apiKeyId, upstreamId }))
 
   return (
     <main className="flex h-[calc(100svh-3rem)] items-stretch">

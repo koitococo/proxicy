@@ -12,20 +12,24 @@ import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/compon
 import { columns, type ChatRequest } from './columns'
 import { DetailPanel } from './detail-panel'
 import { RequestDetailProvider, useRequestDetail } from './request-detail-provider'
+import { RequestsDataProvider, useRequestsData } from './requests-data-provider'
 
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100]
 
 export function RequestsDataTable({ data, total }: { data: ChatRequest[]; total: number }) {
   return (
-    <RequestDetailProvider data={data} total={total}>
-      <DataTableContainer />
-      <DetailPanel />
-    </RequestDetailProvider>
+    <RequestsDataProvider data={data} total={total}>
+      <RequestDetailProvider>
+        <DataTableContainer />
+        <DetailPanel />
+      </RequestDetailProvider>
+    </RequestsDataProvider>
   )
 }
 
 function DataTableContainer() {
-  const { requests: data, isSelectedRequest } = useRequestDetail()
+  const { data } = useRequestsData()
+  const { isSelectedRequest } = useRequestDetail()
 
   const table = useReactTable({
     data,
@@ -70,7 +74,7 @@ function DataTable({ table }: { table: DTable<ChatRequest> }) {
                 key={row.id}
                 tabIndex={0}
                 data-active={selectedRequestId === row.original.id ? '' : undefined}
-                className="active:bg-accent focus-visible:bg-muted/50 data-active:bg-accent/80 data-active:active:bg-accent cursor-pointer"
+                className="active:bg-accent focus-visible:bg-muted/50 data-active:bg-accent/80 data-active:hover:bg-accent cursor-pointer"
                 data-state={row.getIsSelected() && 'selected'}
                 onClick={() => setSelectedRequestId((prev) => (prev === row.original.id ? undefined : row.original.id))}
               >
@@ -105,7 +109,7 @@ function DataTableFooter({ className, ...props }: ComponentProps<'div'>) {
 }
 
 function PageInfo({ className, ...props }: ComponentProps<'div'>) {
-  const { requests: data, total } = useRequestDetail()
+  const { data, total } = useRequestsData()
 
   const { page, pageSize } = useSearch({ from: '/requests/' })
   const from = (page - 1) * pageSize + 1
@@ -120,9 +124,9 @@ function PageInfo({ className, ...props }: ComponentProps<'div'>) {
 }
 
 function Pagination({ className, ...props }: ComponentProps<'div'>) {
-  const { total } = useRequestDetail()
+  const { total } = useRequestsData()
 
-  const { page, pageSize } = useSearch({ from: '/requests/' })
+  const { page, pageSize, ...rest } = useSearch({ from: '/requests/' })
   const pageCount = Math.ceil(total / pageSize)
   const navigate = useNavigate()
 
@@ -132,7 +136,7 @@ function Pagination({ className, ...props }: ComponentProps<'div'>) {
         <div className="text-sm">Rows</div>
         <Select
           value={PAGE_SIZE_OPTIONS.includes(pageSize) ? String(pageSize) : undefined}
-          onValueChange={(v) => navigate({ to: '/requests', search: { page, pageSize: Number(v) } })}
+          onValueChange={(v) => navigate({ to: '/requests', search: { page, pageSize: Number(v), ...rest } })}
         >
           <SelectTrigger className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'font-normal')}>
             <SelectValue placeholder={pageSize} />
@@ -158,7 +162,7 @@ function Pagination({ className, ...props }: ComponentProps<'div'>) {
             onClick={() =>
               navigate({
                 to: '/requests',
-                search: { page: 1, pageSize },
+                search: { page: 1, pageSize, ...rest },
               })
             }
           >
@@ -172,7 +176,7 @@ function Pagination({ className, ...props }: ComponentProps<'div'>) {
             onClick={() =>
               navigate({
                 to: '/requests',
-                search: { page: page - 1, pageSize },
+                search: { page: page - 1, pageSize, ...rest },
               })
             }
           >
@@ -186,7 +190,7 @@ function Pagination({ className, ...props }: ComponentProps<'div'>) {
             onClick={() =>
               navigate({
                 to: '/requests',
-                search: { page: page + 1, pageSize },
+                search: { page: page + 1, pageSize, ...rest },
               })
             }
           >
@@ -200,7 +204,7 @@ function Pagination({ className, ...props }: ComponentProps<'div'>) {
             onClick={() =>
               navigate({
                 to: '/requests',
-                search: { page: pageCount, pageSize },
+                search: { page: pageCount, pageSize, ...rest },
               })
             }
           >

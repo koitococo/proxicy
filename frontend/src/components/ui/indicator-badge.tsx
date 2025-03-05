@@ -19,7 +19,7 @@ export function MiniIndicatorBadge({ className, children, ...props }: ComponentP
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger className="-m-1 p-1">
+        <TooltipTrigger tabIndex={-1} className="-m-1 p-1">
           <div className={cn('size-1.5 rounded-full', className)} {...props} />
         </TooltipTrigger>
         <TooltipContent className="flex items-center gap-1.5">

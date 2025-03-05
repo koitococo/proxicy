@@ -9,7 +9,13 @@ import { formatNumber } from '@/lib/utils'
 import { IndicatorBadge, MiniIndicatorBadge } from '@/components/ui/indicator-badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-export type ChatRequest = Exclude<Awaited<ReturnType<typeof api.admin.completions.get>>['data'], null>['data'][number]
+export type ChatRequest = Omit<
+  Exclude<Awaited<ReturnType<typeof api.admin.completions.get>>['data'], null>['data'][number],
+  'prompt' | 'completion'
+> & {
+  prompt: { messages: ChatCompletionMessageParam[] }
+  completion: ChatCompletionMessage[]
+}
 
 export const columns: ColumnDef<ChatRequest>[] = [
   {
@@ -69,7 +75,7 @@ export const columns: ColumnDef<ChatRequest>[] = [
     accessorKey: 'prompt',
     header: 'Request',
     cell: ({ row }) => {
-      const messages = row.original.prompt.messages as ChatCompletionMessageParam[]
+      const messages = row.original.prompt.messages
       const messageString = getLastUserMessage(messages)
       return (
         <div className="flex items-center gap-1">
@@ -84,7 +90,7 @@ export const columns: ColumnDef<ChatRequest>[] = [
     accessorKey: 'completion',
     header: 'Response',
     cell: ({ row }) => {
-      const messages = row.original.completion as ChatCompletionMessage[]
+      const messages = row.original.completion
       const messageString = getAssistantMessage(messages)
       return (
         <div className="flex items-center gap-1">
