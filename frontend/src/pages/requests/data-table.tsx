@@ -1,111 +1,212 @@
+import type { ComponentProps } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
+import { flexRender, getCoreRowModel, useReactTable, type Table as DTable } from '@tanstack/react-table'
+import { format } from 'date-fns'
 import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
+import { cn, formatNumber } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { DataTable } from '@/components/ui/data-table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 import { columns, type ChatRequest } from './columns'
+import { DetailPanel } from './detail-panel'
+import { RequestDetailProvider, useRequestDetail } from './request-detail-provider'
 
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100]
 
 export function RequestsDataTable({ data, total }: { data: ChatRequest[]; total: number }) {
+  return (
+    <RequestDetailProvider data={data} total={total}>
+      <DataTableContainer />
+      <DetailPanel />
+    </RequestDetailProvider>
+  )
+}
+
+function DataTableContainer() {
+  const { requests: data, isSelectedRequest } = useRequestDetail()
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
+  return (
+    <div
+      data-selected={isSelectedRequest ? '' : undefined}
+      className="@container flex min-w-0 flex-1 flex-col max-lg:data-selected:hidden"
+    >
+      <DataTable table={table} />
+      <DataTableFooter />
+    </div>
+  )
+}
+
+function DataTable({ table }: { table: DTable<ChatRequest> }) {
+  const { selectedRequestId, setSelectedRequestId } = useRequestDetail()
+
+  return (
+    <div className="relative flex-1 overflow-auto">
+      <table className="w-full caption-bottom text-sm">
+        <TableHeader className="bg-background sticky top-0">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                )
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                tabIndex={0}
+                data-active={selectedRequestId === row.original.id ? '' : undefined}
+                className="active:bg-accent focus-visible:bg-muted/50 data-active:bg-accent/80 data-active:active:bg-accent cursor-pointer"
+                data-state={row.getIsSelected() && 'selected'}
+                onClick={() => setSelectedRequestId((prev) => (prev === row.original.id ? undefined : row.original.id))}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No data.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </table>
+    </div>
+  )
+}
+
+function DataTableFooter({ className, ...props }: ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn('bg-background flex flex-wrap items-center gap-x-4 gap-y-2.5 border-t p-2', className)}
+      {...props}
+    >
+      <PageInfo />
+      <Pagination />
+    </div>
+  )
+}
+
+function PageInfo({ className, ...props }: ComponentProps<'div'>) {
+  const { requests: data, total } = useRequestDetail()
+
   const { page, pageSize } = useSearch({ from: '/requests/' })
-  const pageCount = Math.ceil(total / pageSize)
   const from = (page - 1) * pageSize + 1
 
+  return (
+    <div className={cn('pl-2 text-sm @max-4xl:hidden', className)} {...props}>
+      {data.length > 0 &&
+        `Showing ${from} to ${Math.min(from + pageSize - 1, total)} of ${formatNumber(total)} requests
+             from ${format(data[data.length - 1].created_at, 'PP')} to ${format(data[0].created_at, 'PP')}`}
+    </div>
+  )
+}
+
+function Pagination({ className, ...props }: ComponentProps<'div'>) {
+  const { total } = useRequestDetail()
+
+  const { page, pageSize } = useSearch({ from: '/requests/' })
+  const pageCount = Math.ceil(total / pageSize)
   const navigate = useNavigate()
 
   return (
-    <div className="@container py-4">
-      <DataTable columns={columns} data={data} />
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-2 py-4">
+    <div className={cn('flex flex-1 flex-wrap items-center justify-end gap-x-8 gap-y-2', className)} {...props}>
+      <div className="flex items-center gap-2">
+        <div className="text-sm">Rows</div>
+        <Select
+          value={PAGE_SIZE_OPTIONS.includes(pageSize) ? String(pageSize) : undefined}
+          onValueChange={(v) => navigate({ to: '/requests', search: { page, pageSize: Number(v) } })}
+        >
+          <SelectTrigger className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'font-normal')}>
+            <SelectValue placeholder={pageSize} />
+          </SelectTrigger>
+          <SelectContent>
+            {PAGE_SIZE_OPTIONS.map((size) => (
+              <SelectItem key={size} value={String(size)}>
+                {size}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex items-center gap-4">
         <div className="text-sm">
-          Showing {from} to {Math.min(from + pageSize - 1, total)} of {total} requests
+          Page {page} of {pageCount}
         </div>
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
-          <div className="flex items-center gap-2">
-            <div className="text-sm">Rows</div>
-            <Select
-              value={PAGE_SIZE_OPTIONS.includes(pageSize) ? String(pageSize) : undefined}
-              onValueChange={(v) => navigate({ to: '/requests', search: { page, pageSize: Number(v) } })}
-            >
-              <SelectTrigger className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'font-normal')}>
-                <SelectValue placeholder={pageSize} />
-              </SelectTrigger>
-              <SelectContent>
-                {PAGE_SIZE_OPTIONS.map((size) => (
-                  <SelectItem key={size} value={String(size)}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-sm">
-              Page {page} of {pageCount}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                className="size-8"
-                disabled={page <= 1}
-                onClick={() =>
-                  navigate({
-                    to: '/requests',
-                    search: { page: 1, pageSize },
-                  })
-                }
-              >
-                <ChevronsLeftIcon />
-                <span className="sr-only">First</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="size-8"
-                disabled={page <= 1}
-                onClick={() =>
-                  navigate({
-                    to: '/requests',
-                    search: { page: page - 1, pageSize },
-                  })
-                }
-              >
-                <ChevronLeftIcon />
-                <span className="sr-only">Previous</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="size-8"
-                disabled={page >= pageCount}
-                onClick={() =>
-                  navigate({
-                    to: '/requests',
-                    search: { page: page + 1, pageSize },
-                  })
-                }
-              >
-                <ChevronRightIcon />
-                <span className="sr-only">Next</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="size-8"
-                disabled={page >= pageCount}
-                onClick={() =>
-                  navigate({
-                    to: '/requests',
-                    search: { page: pageCount, pageSize },
-                  })
-                }
-              >
-                <ChevronsRightIcon />
-                <span className="sr-only">Last</span>
-              </Button>
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="size-8"
+            disabled={page <= 1}
+            onClick={() =>
+              navigate({
+                to: '/requests',
+                search: { page: 1, pageSize },
+              })
+            }
+          >
+            <ChevronsLeftIcon />
+            <span className="sr-only">First</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="size-8"
+            disabled={page <= 1}
+            onClick={() =>
+              navigate({
+                to: '/requests',
+                search: { page: page - 1, pageSize },
+              })
+            }
+          >
+            <ChevronLeftIcon />
+            <span className="sr-only">Previous</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="size-8"
+            disabled={page >= pageCount}
+            onClick={() =>
+              navigate({
+                to: '/requests',
+                search: { page: page + 1, pageSize },
+              })
+            }
+          >
+            <ChevronRightIcon />
+            <span className="sr-only">Next</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="size-8"
+            disabled={page >= pageCount}
+            onClick={() =>
+              navigate({
+                to: '/requests',
+                search: { page: pageCount, pageSize },
+              })
+            }
+          >
+            <ChevronsRightIcon />
+            <span className="sr-only">Last</span>
+          </Button>
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ export const Route = createFileRoute('/requests')({
 function RouteComponent() {
   return (
     <>
-      <AppHeader>
+      <AppHeader className="border-b">
         <AppHeaderPart>
           <AppSidebarTrigger />
           <AppSidebarSeparator />

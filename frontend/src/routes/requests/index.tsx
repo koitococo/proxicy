@@ -47,7 +47,7 @@ function RouteComponent() {
   } = useSuspenseQuery(requestsQueryOptions(search))
 
   return (
-    <main className="px-4">
+    <main className="flex h-[calc(100svh-3rem)] items-stretch">
       <RequestsDataTable data={data} total={total} />
     </main>
   )

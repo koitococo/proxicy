@@ -9,8 +9,6 @@ import { formatNumber } from '@/lib/utils'
 import { IndicatorBadge, MiniIndicatorBadge } from '@/components/ui/indicator-badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { RowActionButton } from './row-action-button'
-
 export type ChatRequest = Exclude<Awaited<ReturnType<typeof api.admin.completions.get>>['data'], null>['data'][number]
 
 export const columns: ColumnDef<ChatRequest>[] = [
@@ -25,9 +23,9 @@ export const columns: ColumnDef<ChatRequest>[] = [
         .with('failed', () => <MiniIndicatorBadge className="bg-destructive">Failed</MiniIndicatorBadge>)
         .exhaustive()
       return (
-        <div className="flex items-center gap-2.5 text-xs">
+        <div className="flex items-center gap-2.5">
           {indicator}
-          <span className="tabular-nums">{format(row.original.created_at, 'yyyy-MM-dd HH:mm:ss')}</span>
+          <span className="tabular-nums">{format(row.original.created_at, 'MM-dd HH:mm:ss')}</span>
         </div>
       )
     },
@@ -37,35 +35,6 @@ export const columns: ColumnDef<ChatRequest>[] = [
     header: 'Model',
     cell: ({ row }) => {
       return <IndicatorBadge className="text-foreground bg-background border">{row.original.model}</IndicatorBadge>
-    },
-  },
-  {
-    accessorKey: 'prompt',
-    header: 'Request',
-    cell: ({ row }) => {
-      const messages = row.original.prompt.messages as ChatCompletionMessageParam[]
-      const messageString = getLastUserMessage(messages)
-      return (
-        <div className="flex items-center gap-1">
-          <MessageString message={messageString} />
-          {messages.length > 1 && <IndicatorBadge className="shrink-0">+{messages.length - 1}</IndicatorBadge>}
-          <TokensString tokens={row.original.prompt_tokens} />
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: 'completion',
-    header: 'Response',
-    cell: ({ row }) => {
-      const messages = row.original.completion as ChatCompletionMessage[]
-      const messageString = getAssistantMessage(messages)
-      return (
-        <div className="flex items-center gap-1">
-          <MessageString message={messageString} />
-          <TokensString tokens={row.original.completion_tokens} />
-        </div>
-      )
     },
   },
   {
@@ -97,8 +66,33 @@ export const columns: ColumnDef<ChatRequest>[] = [
     },
   },
   {
-    id: 'actions',
-    cell: ({ row }) => <RowActionButton data={row.original} />,
+    accessorKey: 'prompt',
+    header: 'Request',
+    cell: ({ row }) => {
+      const messages = row.original.prompt.messages as ChatCompletionMessageParam[]
+      const messageString = getLastUserMessage(messages)
+      return (
+        <div className="flex items-center gap-1">
+          <MessageString message={messageString} />
+          {messages.length > 1 && <IndicatorBadge className="shrink-0">+{messages.length - 1}</IndicatorBadge>}
+          <TokensString tokens={row.original.prompt_tokens} />
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: 'completion',
+    header: 'Response',
+    cell: ({ row }) => {
+      const messages = row.original.completion as ChatCompletionMessage[]
+      const messageString = getAssistantMessage(messages)
+      return (
+        <div className="flex items-center gap-1">
+          <MessageString message={messageString} />
+          <TokensString tokens={row.original.completion_tokens} />
+        </div>
+      )
+    },
   },
 ]
 
