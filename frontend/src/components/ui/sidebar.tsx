@@ -40,7 +40,7 @@ function useSidebar() {
 }
 
 function SidebarProvider({
-  defaultOpen,
+  defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
   className,
@@ -57,7 +57,8 @@ function SidebarProvider({
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen || localStorage.getItem(SIDEBAR_STORAGE_NAME) === 'true')
+  const localStorageOpen = localStorage.getItem(SIDEBAR_STORAGE_NAME)
+  const [_open, _setOpen] = React.useState(localStorageOpen != null ? localStorageOpen === 'true' : defaultOpen)
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
