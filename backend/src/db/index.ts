@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/bun-sql";
 import * as schema from "./schema";
-import { and, asc, count, eq, not, sum } from "drizzle-orm";
+import { and, asc, count, desc, eq, not, sum } from "drizzle-orm";
 import consola from "consola";
 import { DATABASE_URL } from "@/utils/config";
 
@@ -194,7 +194,7 @@ export async function listCompletions(
     .select()
     .from(schema.CompletionsTable)
     .innerJoin(sq, eq(schema.CompletionsTable.id, sq.id))
-    .orderBy(asc(schema.CompletionsTable.id));
+    .orderBy(desc(schema.CompletionsTable.id));
   const total = await db
     .select({
       total: count(schema.CompletionsTable.id),
