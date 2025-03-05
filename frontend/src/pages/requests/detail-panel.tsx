@@ -1,11 +1,12 @@
 import { createContext, useContext, type ComponentProps } from 'react'
 import { format } from 'date-fns'
-import { BracesIcon, Rows2Icon, XIcon } from 'lucide-react'
+import { ArrowLeftIcon, BracesIcon, PanelRightIcon, Rows2Icon } from 'lucide-react'
 import { match } from 'ts-pattern'
 
 import { cn, formatNumber, omit } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { IndicatorBadge } from '@/components/ui/indicator-badge'
+import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { ChatRequest } from '@/pages/requests/columns'
@@ -25,7 +26,7 @@ export function DetailPanel() {
   if (!isSelectedRequest) return null
 
   return (
-    <div className="bg-background h-full min-w-0 lg:basis-[520px] lg:border-l xl:basis-[620px] 2xl:basis-1/2">
+    <div className="bg-background h-full w-full min-w-0 lg:basis-[520px] lg:border-l xl:basis-[620px] 2xl:basis-1/2">
       {!data ? (
         <div className="flex flex-1 items-center justify-center">
           <Spinner className="text-muted-foreground" />
@@ -53,6 +54,8 @@ function DetailPanelHeader() {
   return (
     <header className="flex items-center justify-between p-4">
       <div className="flex items-center gap-2">
+        <DetailPanelCloseButton className="-m-1.5 mr-0" />
+        <Separator orientation="vertical" className="mr-2 !h-4" />
         {match(data.status)
           .with('pending', () => (
             <IndicatorBadge className="bg-neutral-500/15 text-neutral-800 dark:text-neutral-200">
@@ -68,7 +71,7 @@ function DetailPanelHeader() {
           .exhaustive()}
         <h2 className="text-sm font-medium">{format(data.created_at, 'PP HH:mm:ss')}</h2>
       </div>
-      <div className="-m-1 flex items-center gap-2">
+      <div className="-my-1.5 flex items-center gap-2">
         <TabsList className="h-8 p-0.5">
           <TabsTrigger value="pretty">
             <Rows2Icon />
@@ -79,7 +82,6 @@ function DetailPanelHeader() {
             Raw
           </TabsTrigger>
         </TabsList>
-        <DetailPanelCloseButton />
       </div>
     </header>
   )
@@ -95,7 +97,8 @@ function DetailPanelCloseButton({ className, ...props }: ComponentProps<typeof B
       onClick={() => setSelectedRequestId(undefined)}
       {...props}
     >
-      <XIcon />
+      <ArrowLeftIcon className="lg:hidden" />
+      <PanelRightIcon className="max-lg:hidden" />
     </Button>
   )
 }
