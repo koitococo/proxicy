@@ -187,14 +187,15 @@ export async function listCompletions(
         upstreamId !== undefined ? eq(schema.CompletionsTable.upstreamId, upstreamId) : undefined,
       ),
     )
+    .orderBy(desc(schema.CompletionsTable.id))
+    .offset(offset)
+    .limit(limit)
     .as("sq");
   const r = await db
     .select()
     .from(schema.CompletionsTable)
     .innerJoin(sq, eq(schema.CompletionsTable.id, sq.id))
-    .orderBy(desc(schema.CompletionsTable.id))
-    .offset(offset)
-    .limit(limit);
+    .orderBy(desc(schema.CompletionsTable.id));
   const total = await db
     .select({
       total: count(schema.CompletionsTable.id),
