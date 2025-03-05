@@ -19,7 +19,7 @@ function RouteComponent() {
         <AppHeaderPart>
           <AppSidebarTrigger />
           <AppSidebarSeparator />
-          <AppHeaderTitle>Logs</AppHeaderTitle>
+          <AppHeaderTitle>Requests</AppHeaderTitle>
         </AppHeaderPart>
       </AppHeader>
       <Outlet />
