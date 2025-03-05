@@ -56,19 +56,7 @@ function DetailPanelHeader() {
       <div className="flex items-center gap-2">
         <DetailPanelCloseButton className="-m-1.5 mr-0" />
         <Separator orientation="vertical" className="mr-2 !h-4" />
-        {match(data.status)
-          .with('pending', () => (
-            <IndicatorBadge className="bg-neutral-500/15 text-neutral-800 dark:text-neutral-200">
-              Pending
-            </IndicatorBadge>
-          ))
-          .with('completed', () => (
-            <IndicatorBadge className="bg-green-500/15 text-green-800 dark:text-green-200">Completed</IndicatorBadge>
-          ))
-          .with('failed', () => (
-            <IndicatorBadge className="bg-red-500/15 text-red-800 dark:text-red-200">Failed</IndicatorBadge>
-          ))
-          .exhaustive()}
+        <StatusIndicator status={data.status} />
         <h2 className="text-sm font-medium">{format(data.created_at, 'PP HH:mm:ss')}</h2>
       </div>
       <div className="-my-1.5 flex items-center gap-2">
@@ -85,6 +73,20 @@ function DetailPanelHeader() {
       </div>
     </header>
   )
+}
+
+function StatusIndicator({ status }: { status: ChatRequest['status'] }) {
+  return match(status)
+    .with('pending', () => (
+      <IndicatorBadge className="bg-neutral-500/15 text-neutral-800 dark:text-neutral-200">Pending</IndicatorBadge>
+    ))
+    .with('completed', () => (
+      <IndicatorBadge className="bg-green-500/15 text-green-800 dark:text-green-200">Completed</IndicatorBadge>
+    ))
+    .with('failed', () => (
+      <IndicatorBadge className="bg-red-500/15 text-red-800 dark:text-red-200">Failed</IndicatorBadge>
+    ))
+    .exhaustive()
 }
 
 function DetailPanelCloseButton({ className, ...props }: ComponentProps<typeof Button>) {
