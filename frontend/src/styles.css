@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -150,6 +151,10 @@ code {
       transform: rotate(360deg);
     }
   }
+}
+
+@theme {
+  --breakpoint-3xl: 120rem;
 }
 
 @layer base {

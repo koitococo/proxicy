@@ -128,7 +128,10 @@ function getLastUserMessage(messages: ChatCompletionMessageParam[]): string {
   if (lastUserMessage == null) return ''
   const { content } = lastUserMessage
   if (typeof content === 'string') return content
-  return content.filter((part) => part.type === 'text').join('')
+  return content
+    .filter((part) => part.type === 'text')
+    .map((part) => part.text)
+    .join('')
 }
 
 function getAssistantMessage(messages: ChatCompletionMessage[]): string {
