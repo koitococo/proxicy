@@ -19,7 +19,7 @@ export const usageQueryApi = new Elysia({
         return error(500);
       }
 
-      logger.verbose("queryUsage", bearer);
+      logger.debug("queryUsage", bearer);
       const key = await findApiKey(bearer);
       if (key === null) {
         return null;

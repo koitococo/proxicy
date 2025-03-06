@@ -68,7 +68,7 @@ export const completionsApi = new Elysia({
 
       switch (!!body.stream) {
         case false: {
-          logger.verbose("proxying completions request to upstream", {
+          logger.debug("proxying completions request to upstream", {
             bearer,
             upstreamEndpoint,
           });
@@ -76,8 +76,34 @@ export const completionsApi = new Elysia({
           const resp = await fetch(upstreamEndpoint, {
             body: JSON.stringify(body),
             ...reqInit,
+          }).catch((err) => {
+            logger.error("upstream error", err);
+            return undefined;
           });
-
+          if (!resp) {
+            logger.error("upstream error", {
+              status: 500,
+              msg: "Failed to fetch upstream",
+            });
+            addCompletions(
+              {
+                model: body.model,
+                upstream: upstreamName,
+                prompt: {
+                  messages: cleanedMessages,
+                  n: body.n,
+                },
+                prompt_tokens: -1,
+                completion: [],
+                completion_tokens: -1,
+                status: "failed",
+                ttft: -1,
+                duration: -1,
+              },
+              bearer,
+            );
+            return error(500, "Failed to fetch upstream");
+          }
           if (!resp.ok) {
             const msg = await resp.text();
             logger.error("upstream error", {
@@ -137,7 +163,7 @@ export const completionsApi = new Elysia({
             include_usage: true,
           };
 
-          logger.verbose("proxying stream completions request to upstream", {
+          logger.debug("proxying stream completions request to upstream", {
             userKey: bearer,
             upstreamEndpoint,
             stream: true,
@@ -146,8 +172,34 @@ export const completionsApi = new Elysia({
           const resp = await fetch(upstreamEndpoint, {
             body: JSON.stringify(body),
             ...reqInit,
+          }).catch((err) => {
+            logger.error("upstream error", err);
+            return undefined;
           });
-
+          if (!resp) {
+            logger.error("upstream error", {
+              status: 500,
+              msg: "Failed to fetch upstream",
+            });
+            addCompletions(
+              {
+                model: body.model,
+                upstream: upstreamName,
+                prompt: {
+                  messages: cleanedMessages,
+                  n: body.n,
+                },
+                prompt_tokens: -1,
+                completion: [],
+                completion_tokens: -1,
+                status: "failed",
+                ttft: -1,
+                duration: -1,
+              },
+              bearer,
+            );
+            return error(500, "Failed to fetch upstream");
+          }
           if (!resp.ok) {
             const msg = await resp.text();
             logger.error("upstream error", {

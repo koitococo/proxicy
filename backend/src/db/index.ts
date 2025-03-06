@@ -40,7 +40,7 @@ export type PartialList<T> = {
  * @returns db record of api key, null if not found
  */
 export async function findApiKey(key: string): Promise<ApiKey | null> {
-  logger.verbose("findApiKey", key);
+  logger.debug("findApiKey", key);
   const r = await db.select().from(schema.ApiKeysTable).where(eq(schema.ApiKeysTable.key, key));
   return r.length === 1 ? r[0] : null;
 }
@@ -50,7 +50,7 @@ export async function findApiKey(key: string): Promise<ApiKey | null> {
  * @returns db records of api keys
  */
 export async function listApiKeys(all = false): Promise<ApiKey[]> {
-  logger.verbose("listApiKeys");
+  logger.debug("listApiKeys");
   return await db
     .select()
     .from(schema.ApiKeysTable)
@@ -64,7 +64,7 @@ export async function listApiKeys(all = false): Promise<ApiKey[]> {
  * @returns db record of api key
  */
 export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
-  logger.verbose("upsertApiKey", c);
+  logger.debug("upsertApiKey", c);
   const r = await db
     .insert(schema.ApiKeysTable)
     .values(c)
@@ -83,7 +83,7 @@ export async function upsertApiKey(c: ApiKeyInsert): Promise<ApiKey | null> {
  * @returns db records of upstream, null if not found
  */
 export async function findUpstreams(model: string, upstream?: string): Promise<Upstream[]> {
-  logger.verbose("findUpstreams", model, upstream);
+  logger.debug("findUpstreams", model, upstream);
   const r = await db
     .select()
     .from(schema.UpstreamTable)
@@ -102,7 +102,7 @@ export async function findUpstreams(model: string, upstream?: string): Promise<U
  * @returns db records of upstreams
  */
 export async function listUpstreams() {
-  logger.verbose("listUpstreams");
+  logger.debug("listUpstreams");
   const r = await db.select().from(schema.UpstreamTable).where(not(schema.UpstreamTable.deleted));
   return r;
 }
@@ -113,7 +113,7 @@ export async function listUpstreams() {
  * @returns record of the new upstream, null if already exists
  */
 export async function insertUpstream(c: UpstreamInsert): Promise<Upstream | null> {
-  logger.verbose("insertUpstream", c);
+  logger.debug("insertUpstream", c);
   const r = await db.insert(schema.UpstreamTable).values(c).onConflictDoNothing().returning();
   return r.length === 1 ? r[0] : null;
 }
@@ -124,7 +124,7 @@ export async function insertUpstream(c: UpstreamInsert): Promise<Upstream | null
  * @returns delete record of upstream, null if not found
  */
 export async function deleteUpstream(id: number) {
-  logger.verbose("deleteUpstream", id);
+  logger.debug("deleteUpstream", id);
   const r = await db
     .update(schema.UpstreamTable)
     .set({ deleted: true })
@@ -139,7 +139,7 @@ export async function deleteUpstream(id: number) {
  * @returns db record of completion, null if already exists
  */
 export async function insertCompletion(c: CompletionInsert): Promise<Completion | null> {
-  logger.verbose("insertCompletion", c.model);
+  logger.debug("insertCompletion", c.model);
   const r = await db.insert(schema.CompletionsTable).values(c).onConflictDoNothing().returning();
   return r.length === 1 ? r[0] : null;
 }
@@ -150,7 +150,7 @@ export async function insertCompletion(c: CompletionInsert): Promise<Completion 
  * @returns total prompt tokens and completion tokens used by the api key
  */
 export async function sumCompletionTokenUsage(apiKeyId?: number) {
-  logger.verbose("sumCompletionTokenUsage", apiKeyId);
+  logger.debug("sumCompletionTokenUsage", apiKeyId);
   const r = await db
     .select({
       total_prompt_tokens: sum(schema.CompletionsTable.prompt_tokens),
@@ -216,7 +216,7 @@ export async function listCompletions(
  * @returns deleted record of completion, null if not found
  */
 export async function deleteCompletion(id: number) {
-  logger.verbose("deleteCompletion", id);
+  logger.debug("deleteCompletion", id);
   const r = await db
     .update(schema.CompletionsTable)
     .set({ deleted: true })
@@ -231,7 +231,7 @@ export async function deleteCompletion(id: number) {
  * @returns db record of completion, null if not found
  */
 export async function findCompletion(id: number): Promise<Completion | null> {
-  logger.verbose("findCompletion", id);
+  logger.debug("findCompletion", id);
   const r = await db
     .select()
     .from(schema.CompletionsTable)
