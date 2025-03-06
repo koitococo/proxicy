@@ -24,8 +24,9 @@ export function RowActionButton({ data }: { data: Upstream }) {
   const queryClient = useQueryClient()
   const { mutate } = useMutation({
     mutationFn: async (id: number) => {
-      const { error } = await api.admin.upstream({ id }).delete()
+      const { data, error } = await api.admin.upstream({ id }).delete()
       if (error) throw newApiError(error)
+      return data
     },
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ['upstreams'] })
@@ -42,6 +43,9 @@ export function RowActionButton({ data }: { data: Upstream }) {
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: ['upstreams'] })
+    },
+    onSuccess: (data) => {
+      toast.success(`Provider ${data.name} deleted.`)
     },
   })
 

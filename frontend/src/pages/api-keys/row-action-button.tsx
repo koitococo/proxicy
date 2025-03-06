@@ -33,8 +33,9 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
   const queryClient = useQueryClient()
   const { mutate } = useMutation({
     mutationFn: async (key: string) => {
-      const { error } = await api.admin.apiKey({ key }).delete()
+      const { data, error } = await api.admin.apiKey({ key }).delete()
       if (error) throw newApiError(error)
+      return data
     },
     onMutate: async (key) => {
       await queryClient.cancelQueries({ queryKey: ['apiKeys'] })
@@ -62,6 +63,9 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
+    },
+    onSuccess: () => {
+      toast.success(`API key revoked.`)
     },
   })
 
