@@ -37,7 +37,7 @@ export const adminApiKey = new Elysia()
       const r = await upsertApiKey({
         key,
         comment: body.comment,
-        expires_at: body.expires_at,
+        expiresAt: body.expires_at,
       });
       if (r === null) {
         return error(500, "Failed to create key");
@@ -60,7 +60,7 @@ export const adminApiKey = new Elysia()
       const r = await upsertApiKey({
         key,
         revoked: true,
-        updated_at: new Date(),
+        updatedAt: new Date(),
       });
       if (r === null) {
         return error(404, "Key not found");

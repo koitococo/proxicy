@@ -153,8 +153,8 @@ export async function sumCompletionTokenUsage(apiKeyId?: number) {
   logger.debug("sumCompletionTokenUsage", apiKeyId);
   const r = await db
     .select({
-      total_prompt_tokens: sum(schema.CompletionsTable.prompt_tokens),
-      total_completion_tokens: sum(schema.CompletionsTable.completion_tokens),
+      total_prompt_tokens: sum(schema.CompletionsTable.promptTokens),
+      total_completion_tokens: sum(schema.CompletionsTable.completionTokens),
     })
     .from(schema.CompletionsTable)
     .where(apiKeyId !== undefined ? eq(schema.CompletionsTable.apiKeyId, apiKeyId) : undefined);
