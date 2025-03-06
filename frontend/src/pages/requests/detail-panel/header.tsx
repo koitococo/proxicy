@@ -54,7 +54,7 @@ function StatusIndicator({ status }: { status: ChatRequest['status'] }) {
     .exhaustive()
 }
 
-function DetailPanelCloseButton({ className, ...props }: ComponentProps<typeof Button>) {
+export function DetailPanelCloseButton({ className, ...props }: ComponentProps<typeof Button>) {
   const { setSelectedRequestId } = useRequestDetail()
 
   return (

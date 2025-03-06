@@ -1,11 +1,13 @@
 import { createContext, useContext } from 'react'
+import { RotateCcwIcon, XIcon } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 
 import type { ChatRequest } from '../columns'
 import { useRequestDetail } from '../request-detail-provider'
-import { DetailPanelHeader } from './header'
+import { DetailPanelCloseButton, DetailPanelHeader } from './header'
 import { MessagesPrettyView } from './pretty-view'
 import { MessagesRawView } from './raw-view'
 
@@ -17,15 +19,42 @@ export const useRequestDetailContext = () => {
 }
 
 export function DetailPanel() {
-  const { isSelectedRequest, selectedRequest: data } = useRequestDetail()
+  const {
+    isSelectedRequest,
+    selectedRequest: data,
+    setSelectedRequestId,
+    isPending,
+    error,
+    refetch,
+  } = useRequestDetail()
 
   if (!isSelectedRequest) return null
 
   return (
     <div className="bg-background 3xl:basis-3/5 @container h-full w-full min-w-0 lg:basis-[520px] lg:border-l xl:basis-[620px] 2xl:basis-1/2">
       {!data ? (
-        <div className="flex flex-1 items-center justify-center">
-          <Spinner className="text-muted-foreground" />
+        <div className="flex h-full flex-col">
+          <header className="flex items-center justify-between p-4 @2xl:border-b">
+            <DetailPanelCloseButton className="-m-1.5 mr-0" />
+          </header>
+          <div className="flex flex-1 flex-col items-center justify-center">
+            {isPending && <Spinner className="text-muted-foreground" />}
+            {error && (
+              <>
+                <div className="text-sm">{error?.message}</div>
+                <div className="mt-4 flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setSelectedRequestId(undefined)}>
+                    <XIcon />
+                    Close
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => refetch()}>
+                    <RotateCcwIcon />
+                    Retry
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       ) : (
         <DetailContext.Provider value={data}>
