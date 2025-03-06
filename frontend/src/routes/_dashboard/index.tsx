@@ -8,5 +8,5 @@ export const Route = createFileRoute('/_dashboard/')({
 })
 
 function RouteComponent() {
-  return <div>Hello from dashboard</div>
+  return <div>Hello from home</div>
 }

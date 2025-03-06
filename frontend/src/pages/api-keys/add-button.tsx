@@ -41,7 +41,7 @@ export function AddButton({ ...props }: ComponentProps<typeof Button>) {
       <DialogTrigger asChild>
         <Button {...props}>
           <PlusIcon />
-          New API Key
+          New Application
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -57,17 +57,18 @@ function AddDialogContent() {
   return !createdKey ? (
     <>
       <DialogHeader>
-        <DialogTitle>Create a new API key</DialogTitle>
-        <DialogDescription>Create a new API key for chat completion.</DialogDescription>
+        <DialogTitle>Create a new application</DialogTitle>
+        <DialogDescription>Create a new application for LLM calls.</DialogDescription>
       </DialogHeader>
       <AddKeyForm onSubmitSuccessful={(key) => setCreatedKey(key)} />
     </>
   ) : (
     <>
       <DialogHeader>
-        <DialogTitle>API key created</DialogTitle>
+        <DialogTitle>Application created</DialogTitle>
         <DialogDescription>
-          Your new API key has been created. Please copy it and store it in a safe place.
+          Your new application with the API key has been created. Please copy the API key below and store it in a safe
+          place.
         </DialogDescription>
         <KeyCreatedContent apiKey={createdKey} />
       </DialogHeader>
@@ -102,11 +103,11 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: (key: string) 
           name="comment"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Comment</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>Enter a comment to help identify this API key.</FormDescription>
+              <FormDescription>Enter a name for this application.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -121,7 +122,7 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: (key: string) 
                 <ExpireDatePicker value={field.value} onValueChange={field.onChange} />
               </FormControl>
               <FormDescription>
-                Choose an expiration date for this API key, or select no expiration date.
+                Choose an expiration date for the API key of this application, or select no expiration date.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -206,7 +207,7 @@ function ExpireDatePicker({ value, onValueChange }: { value?: Date; onValueChang
 }
 
 function KeyCreatedContent({ apiKey }: { apiKey: string }) {
-  const { copy, copied } = useCopy()
+  const { copy, copied } = useCopy({ showSuccessToast: true, successToastMessage: 'API key copied to clipboard.' })
 
   return (
     <div className="grid gap-4">

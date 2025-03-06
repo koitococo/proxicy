@@ -14,7 +14,7 @@ const apiKeysQueryOptions = ({ includeRevoked = false }: { includeRevoked?: bool
     queryKey: ['apiKeys', { includeRevoked }],
     queryFn: async () => {
       const { data, error } = await api.admin.apiKey.get({ query: { includeRevoked } })
-      if (error) throw formatError(error, 'An error occurred while fetching API keys.')
+      if (error) throw formatError(error, 'An error occurred while fetching applications.')
       return data
     },
   })
@@ -23,7 +23,7 @@ const apiKeysSearchSchema = z.object({
   includeRevoked: z.boolean().optional(),
 })
 
-export const Route = createFileRoute('/api-keys/')({
+export const Route = createFileRoute('/apps/')({
   validateSearch: zodValidator(apiKeysSearchSchema),
   loaderDeps: ({ search: { includeRevoked } }) => ({ includeRevoked }),
   loader: ({ deps: { includeRevoked } }) => queryClient.ensureQueryData(apiKeysQueryOptions({ includeRevoked })),

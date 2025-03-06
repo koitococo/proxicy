@@ -95,7 +95,7 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
               <AlertDialogTrigger asChild>
                 <DropdownMenuItem>
                   <OctagonXIcon />
-                  Revoke
+                  Revoke API Key
                 </DropdownMenuItem>
               </AlertDialogTrigger>
             </>
@@ -106,7 +106,8 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This API key <span className="text-foreground font-bold">{data.comment}</span> will be revoked.
+            The API key of application <span className="text-foreground font-bold">{data.comment}</span> will be
+            revoked.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

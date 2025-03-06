@@ -11,11 +11,11 @@ export type ApiKey = Exclude<Awaited<ReturnType<typeof api.admin.apiKey.get>>['d
 export const columns: ColumnDef<ApiKey>[] = [
   {
     accessorKey: 'comment',
-    header: 'Comment',
+    header: 'Name',
   },
   {
     accessorKey: 'key',
-    header: 'Key',
+    header: 'API Key',
     cell: ({ row }) => <ApiKeyCopyButton apiKey={row.original.key} revoked={row.original.revoked} />,
   },
   {

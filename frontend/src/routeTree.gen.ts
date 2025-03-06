@@ -13,11 +13,11 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as RequestsRouteImport } from './routes/requests/route'
 import { Route as ProvidersRouteImport } from './routes/providers/route'
-import { Route as ApiKeysRouteImport } from './routes/api-keys/route'
+import { Route as AppsRouteImport } from './routes/apps/route'
 import { Route as DashboardRouteImport } from './routes/_dashboard/route'
 import { Route as RequestsIndexImport } from './routes/requests/index'
 import { Route as ProvidersIndexImport } from './routes/providers/index'
-import { Route as ApiKeysIndexImport } from './routes/api-keys/index'
+import { Route as AppsIndexImport } from './routes/apps/index'
 import { Route as DashboardIndexImport } from './routes/_dashboard/index'
 
 // Create/Update Routes
@@ -34,9 +34,9 @@ const ProvidersRouteRoute = ProvidersRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ApiKeysRouteRoute = ApiKeysRouteImport.update({
-  id: '/api-keys',
-  path: '/api-keys',
+const AppsRouteRoute = AppsRouteImport.update({
+  id: '/apps',
+  path: '/apps',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -57,10 +57,10 @@ const ProvidersIndexRoute = ProvidersIndexImport.update({
   getParentRoute: () => ProvidersRouteRoute,
 } as any)
 
-const ApiKeysIndexRoute = ApiKeysIndexImport.update({
+const AppsIndexRoute = AppsIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => ApiKeysRouteRoute,
+  getParentRoute: () => AppsRouteRoute,
 } as any)
 
 const DashboardIndexRoute = DashboardIndexImport.update({
@@ -80,11 +80,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRoute
     }
-    '/api-keys': {
-      id: '/api-keys'
-      path: '/api-keys'
-      fullPath: '/api-keys'
-      preLoaderRoute: typeof ApiKeysRouteImport
+    '/apps': {
+      id: '/apps'
+      path: '/apps'
+      fullPath: '/apps'
+      preLoaderRoute: typeof AppsRouteImport
       parentRoute: typeof rootRoute
     }
     '/providers': {
@@ -108,12 +108,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof DashboardRouteImport
     }
-    '/api-keys/': {
-      id: '/api-keys/'
+    '/apps/': {
+      id: '/apps/'
       path: '/'
-      fullPath: '/api-keys/'
-      preLoaderRoute: typeof ApiKeysIndexImport
-      parentRoute: typeof ApiKeysRouteImport
+      fullPath: '/apps/'
+      preLoaderRoute: typeof AppsIndexImport
+      parentRoute: typeof AppsRouteImport
     }
     '/providers/': {
       id: '/providers/'
@@ -146,16 +146,16 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
   DashboardRouteRouteChildren,
 )
 
-interface ApiKeysRouteRouteChildren {
-  ApiKeysIndexRoute: typeof ApiKeysIndexRoute
+interface AppsRouteRouteChildren {
+  AppsIndexRoute: typeof AppsIndexRoute
 }
 
-const ApiKeysRouteRouteChildren: ApiKeysRouteRouteChildren = {
-  ApiKeysIndexRoute: ApiKeysIndexRoute,
+const AppsRouteRouteChildren: AppsRouteRouteChildren = {
+  AppsIndexRoute: AppsIndexRoute,
 }
 
-const ApiKeysRouteRouteWithChildren = ApiKeysRouteRoute._addFileChildren(
-  ApiKeysRouteRouteChildren,
+const AppsRouteRouteWithChildren = AppsRouteRoute._addFileChildren(
+  AppsRouteRouteChildren,
 )
 
 interface ProvidersRouteRouteChildren {
@@ -184,18 +184,18 @@ const RequestsRouteRouteWithChildren = RequestsRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '': typeof DashboardRouteRouteWithChildren
-  '/api-keys': typeof ApiKeysRouteRouteWithChildren
+  '/apps': typeof AppsRouteRouteWithChildren
   '/providers': typeof ProvidersRouteRouteWithChildren
   '/requests': typeof RequestsRouteRouteWithChildren
   '/': typeof DashboardIndexRoute
-  '/api-keys/': typeof ApiKeysIndexRoute
+  '/apps/': typeof AppsIndexRoute
   '/providers/': typeof ProvidersIndexRoute
   '/requests/': typeof RequestsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof DashboardIndexRoute
-  '/api-keys': typeof ApiKeysIndexRoute
+  '/apps': typeof AppsIndexRoute
   '/providers': typeof ProvidersIndexRoute
   '/requests': typeof RequestsIndexRoute
 }
@@ -203,11 +203,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_dashboard': typeof DashboardRouteRouteWithChildren
-  '/api-keys': typeof ApiKeysRouteRouteWithChildren
+  '/apps': typeof AppsRouteRouteWithChildren
   '/providers': typeof ProvidersRouteRouteWithChildren
   '/requests': typeof RequestsRouteRouteWithChildren
   '/_dashboard/': typeof DashboardIndexRoute
-  '/api-keys/': typeof ApiKeysIndexRoute
+  '/apps/': typeof AppsIndexRoute
   '/providers/': typeof ProvidersIndexRoute
   '/requests/': typeof RequestsIndexRoute
 }
@@ -216,23 +216,23 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/api-keys'
+    | '/apps'
     | '/providers'
     | '/requests'
     | '/'
-    | '/api-keys/'
+    | '/apps/'
     | '/providers/'
     | '/requests/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api-keys' | '/providers' | '/requests'
+  to: '/' | '/apps' | '/providers' | '/requests'
   id:
     | '__root__'
     | '/_dashboard'
-    | '/api-keys'
+    | '/apps'
     | '/providers'
     | '/requests'
     | '/_dashboard/'
-    | '/api-keys/'
+    | '/apps/'
     | '/providers/'
     | '/requests/'
   fileRoutesById: FileRoutesById
@@ -240,14 +240,14 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
-  ApiKeysRouteRoute: typeof ApiKeysRouteRouteWithChildren
+  AppsRouteRoute: typeof AppsRouteRouteWithChildren
   ProvidersRouteRoute: typeof ProvidersRouteRouteWithChildren
   RequestsRouteRoute: typeof RequestsRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
-  ApiKeysRouteRoute: ApiKeysRouteRouteWithChildren,
+  AppsRouteRoute: AppsRouteRouteWithChildren,
   ProvidersRouteRoute: ProvidersRouteRouteWithChildren,
   RequestsRouteRoute: RequestsRouteRouteWithChildren,
 }
@@ -263,7 +263,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_dashboard",
-        "/api-keys",
+        "/apps",
         "/providers",
         "/requests"
       ]
@@ -274,10 +274,10 @@ export const routeTree = rootRoute
         "/_dashboard/"
       ]
     },
-    "/api-keys": {
-      "filePath": "api-keys/route.tsx",
+    "/apps": {
+      "filePath": "apps/route.tsx",
       "children": [
-        "/api-keys/"
+        "/apps/"
       ]
     },
     "/providers": {
@@ -296,9 +296,9 @@ export const routeTree = rootRoute
       "filePath": "_dashboard/index.tsx",
       "parent": "/_dashboard"
     },
-    "/api-keys/": {
-      "filePath": "api-keys/index.tsx",
-      "parent": "/api-keys"
+    "/apps/": {
+      "filePath": "apps/index.tsx",
+      "parent": "/apps"
     },
     "/providers/": {
       "filePath": "providers/index.tsx",
