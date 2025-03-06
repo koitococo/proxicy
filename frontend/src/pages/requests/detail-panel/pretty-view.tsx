@@ -109,7 +109,7 @@ function ResponseMessageContent({ message, className }: { message: ResponseMessa
 }
 
 function DurationDisplay({ duration }: { duration?: number | null }) {
-  if (!duration) return '-'
+  if (duration == null || duration === -1) return '-'
 
   return (
     <Tooltip>
