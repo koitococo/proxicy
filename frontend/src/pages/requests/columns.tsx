@@ -59,18 +59,12 @@ export const columns: ColumnDef<ChatRequest>[] = [
         </div>
       </TooltipProvider>
     ),
-    cell: ({ row }) => {
-      if (row.original.ttft == null) return <div>-</div>
-      return <div className="text-right tabular-nums">{(row.original.ttft / 1000).toFixed(2)}s</div>
-    },
+    cell: ({ row }) => <DurationDisplay duration={row.original.ttft} />,
   },
   {
     accessorKey: 'duration',
     header: () => <div className="text-right">Duration</div>,
-    cell: ({ row }) => {
-      if (row.original.duration == null) return <div>-</div>
-      return <div className="text-right tabular-nums">{(row.original.duration / 1000).toFixed(2)}s</div>
-    },
+    cell: ({ row }) => <DurationDisplay duration={row.original.duration} />,
   },
   {
     accessorKey: 'prompt',
@@ -130,6 +124,12 @@ function TokensString({ tokens }: { tokens: number }) {
     .otherwise((tokens) => `${formatNumber(tokens)} tokens`)
 
   return tokenString && <div className="text-muted-foreground text-xs">{tokenString}</div>
+}
+
+function DurationDisplay({ duration }: { duration: number | null }) {
+  if (duration == null || duration === -1) return <div className="text-right">-</div>
+
+  return <div className="text-right tabular-nums">{(duration / 1000).toFixed(2)}s</div>
 }
 
 function getLastUserMessage(messages: ChatCompletionMessageParam[]): string {
