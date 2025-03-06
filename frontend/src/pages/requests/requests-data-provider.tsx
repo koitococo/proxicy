@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react'
 
-import type { ChatRequest } from '@/pages/requests/columns'
+import type { ChatRequest } from './columns'
 
 const RequestsDataContext = createContext<{
   data: ChatRequest[]

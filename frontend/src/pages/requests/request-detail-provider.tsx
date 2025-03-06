@@ -4,8 +4,9 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 
 import { api } from '@/lib/api'
 import { formatError } from '@/lib/error'
-import type { ChatRequest } from '@/pages/requests/columns'
-import { useRequestsData } from '@/pages/requests/requests-data-provider'
+
+import type { ChatRequest } from './columns'
+import { useRequestsData } from './requests-data-provider'
 
 export const RequestDetailContext = createContext<{
   selectedRequestId: number | undefined
