@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client'
 import { routeTree } from './routeTree.gen'
 
 import './styles.css'
+import 'katex/dist/katex.min.css'
 
 import { QueryProvider } from '@/components/app/query-provider'
 

@@ -87,7 +87,7 @@ function MessageContent({ message }: { message: RequestMessage }) {
       className="data-[role=user]:bg-muted/75 px-4 py-3 data-[role=system]:not-last:border-b"
     >
       <h4 className="text-muted-foreground mb-2 text-sm font-semibold">{message.role}</h4>
-      <Markdown className="prose-sm prose-code:text-xs prose-code:font-mono" text={getMessageText(message)} />
+      <Markdown className="prose-sm prose-code:text-xs" text={getMessageText(message)} />
     </div>
   )
 }
@@ -98,9 +98,7 @@ function ResponseMessageContent({ message, className }: { message: ResponseMessa
   const renderResult: ReactNode[] = []
 
   if (content) {
-    renderResult.push(
-      <Markdown className="prose-sm prose-code:text-xs prose-code:font-mono px-4 py-3" text={content} />,
-    )
+    renderResult.push(<Markdown className="prose-sm prose-code:text-xs px-4 py-3" text={content} />)
   }
 
   if (refusal) {
