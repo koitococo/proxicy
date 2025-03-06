@@ -12,9 +12,9 @@ export async function addCompletions(
     model: string;
     upstreamId: number;
     prompt: CompletionsPromptType;
-    prompt_tokens: number;
+    promptTokens: number;
     completion: CompletionsCompletionType;
-    completion_tokens: number;
+    completionTokens: number;
     status: CompletionsStatusEnumType;
     ttft: number;
     duration: number;
