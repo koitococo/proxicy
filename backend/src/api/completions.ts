@@ -88,7 +88,7 @@ export const completionsApi = new Elysia({
             addCompletions(
               {
                 model: body.model,
-                upstream: upstreamName,
+                upstreamId: upstream.id,
                 prompt: {
                   messages: cleanedMessages,
                   n: body.n,
@@ -112,7 +112,7 @@ export const completionsApi = new Elysia({
             });
             addCompletions({
               model: body.model,
-              upstream: upstreamName,
+              upstreamId: upstream.id,
               prompt: {
                 messages: cleanedMessages,
                 n: body.n,
@@ -132,7 +132,7 @@ export const completionsApi = new Elysia({
           addCompletions(
             {
               model: body.model,
-              upstream: upstreamName,
+              upstreamId: upstream.id,
               prompt: {
                 messages: cleanedMessages,
                 n: body.n,
@@ -184,7 +184,7 @@ export const completionsApi = new Elysia({
             addCompletions(
               {
                 model: body.model,
-                upstream: upstreamName,
+                upstreamId: upstream.id,
                 prompt: {
                   messages: cleanedMessages,
                   n: body.n,
@@ -208,7 +208,7 @@ export const completionsApi = new Elysia({
             });
             addCompletions({
               model: body.model,
-              upstream: upstreamName,
+              upstreamId: upstream.id,
               prompt: {
                 messages: cleanedMessages,
                 n: body.n,
@@ -229,7 +229,7 @@ export const completionsApi = new Elysia({
             });
             addCompletions({
               model: body.model,
-              upstream: upstreamName,
+              upstreamId: upstream.id,
               prompt: {
                 messages: cleanedMessages,
                 n: body.n,
@@ -262,7 +262,7 @@ export const completionsApi = new Elysia({
               addCompletions(
                 {
                   model: body.model,
-                  upstream: upstreamName,
+                  upstreamId: upstream.id,
                   prompt: {
                     messages: cleanedMessages,
                     n: body.n,
@@ -308,7 +308,7 @@ export const completionsApi = new Elysia({
               addCompletions(
                 {
                   model: data.model,
-                  upstream: upstreamName,
+                  upstreamId: upstream.id,
                   prompt: {
                     messages: cleanedMessages,
                     n: body.n,
