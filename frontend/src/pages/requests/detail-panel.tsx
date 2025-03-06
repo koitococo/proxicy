@@ -3,6 +3,8 @@ import { format } from 'date-fns'
 import {
   ArrowLeftIcon,
   BracesIcon,
+  CheckIcon,
+  CopyIcon,
   ForwardIcon,
   HelpCircleIcon,
   PanelRightIcon,
@@ -19,6 +21,7 @@ import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useCopy } from '@/hooks/use-copy'
 import type { ChatRequest } from '@/pages/requests/columns'
 
 import { useRequestDetail } from './request-detail-provider'
@@ -168,16 +171,18 @@ function MessagesPrettyView() {
     {
       key: 'id',
       name: 'Request ID',
+      className: 'tabular-nums',
     },
     {
       key: 'model',
       name: 'Model',
+      value: <CopiableText text={data.model} />,
     },
     {
       key: 'ttft',
       name: 'TTFT',
       value: <DurationDisplay duration={data.ttft} />,
-      help: 'Time To First Token',
+      help: 'Time to first token',
     },
     {
       key: 'duration',
@@ -311,11 +316,36 @@ function DurationDisplay({ duration }: { duration?: number | null }) {
 
   return (
     <Tooltip>
-      <TooltipTrigger className="text-sm" asChild>
-        <span className="cursor-default">{(duration / 1000).toFixed(2)}s</span>
+      <TooltipTrigger className="tabular-nums" asChild>
+        <DescriptionItemButton>{(duration / 1000).toFixed(2)}s</DescriptionItemButton>
       </TooltipTrigger>
-      <TooltipContent>{formatNumber(duration)}ms</TooltipContent>
+      <TooltipContent side="right">{formatNumber(duration)}ms</TooltipContent>
     </Tooltip>
+  )
+}
+
+function CopiableText({ text }: { text: string }) {
+  const { copy, copied } = useCopy({ showSuccessToast: true })
+
+  return (
+    <DescriptionItemButton onClick={() => copy(text)} className="group gap-0">
+      {text}
+      <span className="text-muted-foreground w-0 overflow-hidden pl-0 transition-[width,padding] group-hover:w-4 group-hover:pl-1 [&_svg]:size-3">
+        {copied ? <CheckIcon /> : <CopyIcon />}
+      </span>
+    </DescriptionItemButton>
+  )
+}
+
+function DescriptionItemButton({ className, ...props }: ComponentProps<'button'>) {
+  return (
+    <button
+      className={cn(
+        'hover:bg-accent hover:text-accent-foreground -mx-1.5 -my-1 flex items-center gap-1 rounded-md px-1.5 py-1 text-sm transition',
+        className,
+      )}
+      {...props}
+    />
   )
 }
 
