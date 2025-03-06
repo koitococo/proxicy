@@ -21,7 +21,10 @@ function Root() {
           <AuthDialog />
         </SidebarInset>
         <Toaster />
-        <TanStackRouterDevtools position="bottom-right" />
+        <TanStackRouterDevtools
+          toggleButtonProps={{ className: '*:not-first:hidden !opacity-0 hover:!opacity-100' }}
+          position="bottom-left"
+        />
       </SidebarProvider>
     </ThemeProvider>
   )
