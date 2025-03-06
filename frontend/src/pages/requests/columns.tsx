@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { HelpCircleIcon } from 'lucide-react'
@@ -5,7 +6,7 @@ import type { ChatCompletionMessage, ChatCompletionMessageParam } from 'openai/r
 import { match } from 'ts-pattern'
 
 import type { api } from '@/lib/api'
-import { formatNumber } from '@/lib/utils'
+import { cn, formatNumber } from '@/lib/utils'
 import { IndicatorBadge, MiniIndicatorBadge } from '@/components/ui/indicator-badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -78,11 +79,11 @@ export const columns: ColumnDef<ChatRequest>[] = [
       const messages = row.original.prompt.messages
       const messageString = getLastUserMessage(messages)
       return (
-        <div className="flex items-center gap-1">
+        <MessageContainer>
           <MessageString message={messageString} />
           {messages.length > 1 && <IndicatorBadge className="shrink-0">+{messages.length - 1}</IndicatorBadge>}
           <TokensString tokens={row.original.prompt_tokens} />
-        </div>
+        </MessageContainer>
       )
     },
   },
@@ -93,21 +94,30 @@ export const columns: ColumnDef<ChatRequest>[] = [
       const messages = row.original.completion
       const messageString = getAssistantMessage(messages)
       return (
-        <div className="flex items-center gap-1">
+        <MessageContainer>
           <MessageString message={messageString} />
           <TokensString tokens={row.original.completion_tokens} />
-        </div>
+        </MessageContainer>
       )
     },
   },
 ]
 
-function MessageString({ message }: { message: string }) {
+function MessageContainer({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
-      className="max-w-[120px] min-w-0 truncate @5xl:max-w-[200px] @7xl:max-w-xs @min-[100rem]:max-w-md"
-      title={message}
-    >
+      className={cn(
+        'flex max-w-[200px] items-center gap-1 @5xl:max-w-[280px] @7xl:max-w-sm @min-[94rem]:max-w-lg @min-[102rem]:max-w-xl @min-[114rem]:max-w-2xl @min-[128rem]:max-w-3xl @min-[142rem]:max-w-4xl',
+        className,
+      )}
+      {...props}
+    />
+  )
+}
+
+function MessageString({ message }: { message: string }) {
+  return (
+    <div className="truncate" title={message}>
       {message}
     </div>
   )
