@@ -27,7 +27,7 @@ export function MessagesPrettyView() {
             icon={<ForwardIcon />}
             title="Request messages"
             length={data.prompt.messages.length}
-            tokens={data.prompt_tokens}
+            tokens={data.promptTokens}
           />
           <div className="flex flex-col">
             {data.prompt.messages.map((message, index) => (
@@ -36,7 +36,7 @@ export function MessagesPrettyView() {
           </div>
         </MessagesPrettyContainer>
         <MessagesPrettyContainer>
-          <MessageTitle icon={<ReplyIcon />} title="Respnse messages" tokens={data.completion_tokens} />
+          <MessageTitle icon={<ReplyIcon />} title="Respnse messages" tokens={data.completionTokens} />
           <div className="flex flex-col">
             {data.completion.map((message, index) => (
               <ResponseMessageContent key={index} message={message} />

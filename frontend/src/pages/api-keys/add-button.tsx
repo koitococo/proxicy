@@ -30,7 +30,7 @@ import { useCopy } from '@/hooks/use-copy'
 
 const addKeySchema = z.object({
   comment: z.string().min(1, { message: 'Comment is required' }),
-  expires_at: z.date().optional(),
+  expiresAt: z.date().optional(),
 })
 
 type AddKeySchema = z.infer<typeof addKeySchema>
@@ -113,7 +113,7 @@ function AddKeyForm({ onSubmitSuccessful }: { onSubmitSuccessful: (key: string) 
         />
         <FormField
           control={form.control}
-          name="expires_at"
+          name="expiresAt"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Expiration</FormLabel>

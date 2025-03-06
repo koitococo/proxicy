@@ -118,7 +118,7 @@ function PageInfo({ className, ...props }: ComponentProps<'div'>) {
     <div className={cn('pl-2 text-sm @max-4xl:hidden', className)} {...props}>
       {data.length > 0 &&
         `Showing ${from} to ${Math.min(from + pageSize - 1, total)} of ${formatNumber(total)} requests
-             from ${format(data[data.length - 1].created_at, 'PP')} to ${format(data[0].created_at, 'PP')}`}
+             from ${format(data[data.length - 1].createdAt, 'PP')} to ${format(data[0].createdAt, 'PP')}`}
     </div>
   )
 }

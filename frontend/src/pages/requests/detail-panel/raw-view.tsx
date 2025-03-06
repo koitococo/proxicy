@@ -10,10 +10,10 @@ export function MessagesRawView() {
     <div className="flex flex-col gap-4 px-4">
       <MessagesCodePreview
         title="Raw data"
-        messages={omit(data, ['prompt', 'completion', 'prompt_tokens', 'completion_tokens'])}
+        messages={omit(data, ['prompt', 'completion', 'promptTokens', 'completionTokens'])}
       />
-      <MessagesCodePreview title="Request messages" messages={data.prompt.messages} tokens={data.prompt_tokens} />
-      <MessagesCodePreview title="Response messages" messages={data.completion} tokens={data.completion_tokens} />
+      <MessagesCodePreview title="Request messages" messages={data.prompt.messages} tokens={data.promptTokens} />
+      <MessagesCodePreview title="Response messages" messages={data.completion} tokens={data.completionTokens} />
     </div>
   )
 }

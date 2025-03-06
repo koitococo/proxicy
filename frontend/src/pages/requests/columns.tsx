@@ -20,7 +20,7 @@ export type ChatRequest = Omit<
 
 export const columns: ColumnDef<ChatRequest>[] = [
   {
-    accessorKey: 'created_at',
+    accessorKey: 'createdAt',
     header: () => <div className="pl-4">Created At</div>,
     cell: ({ row }) => {
       const status = row.original.status
@@ -32,7 +32,7 @@ export const columns: ColumnDef<ChatRequest>[] = [
       return (
         <div className="flex items-center gap-2.5">
           {indicator}
-          <span className="tabular-nums">{format(row.original.created_at, 'MM-dd HH:mm:ss')}</span>
+          <span className="tabular-nums">{format(row.original.createdAt, 'MM-dd HH:mm:ss')}</span>
         </div>
       )
     },
@@ -76,7 +76,7 @@ export const columns: ColumnDef<ChatRequest>[] = [
         <MessageContainer>
           <MessageString message={messageString} />
           {messages.length > 1 && <IndicatorBadge className="shrink-0">+{messages.length - 1}</IndicatorBadge>}
-          <TokensString tokens={row.original.prompt_tokens} />
+          <TokensString tokens={row.original.promptTokens} />
         </MessageContainer>
       )
     },
@@ -90,7 +90,7 @@ export const columns: ColumnDef<ChatRequest>[] = [
       return (
         <MessageContainer>
           <MessageString message={messageString} />
-          <TokensString tokens={row.original.completion_tokens} />
+          <TokensString tokens={row.original.completionTokens} />
         </MessageContainer>
       )
     },

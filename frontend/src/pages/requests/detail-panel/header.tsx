@@ -22,7 +22,7 @@ export function DetailPanelHeader() {
         <DetailPanelCloseButton className="-m-1.5 mr-0" />
         <Separator orientation="vertical" className="mr-2 !h-4" />
         <StatusIndicator status={data.status} />
-        <h2 className="text-sm font-medium">{format(data.created_at, 'PP HH:mm:ss')}</h2>
+        <h2 className="text-sm font-medium">{format(data.createdAt, 'PP HH:mm:ss')}</h2>
       </div>
       <div className="-my-1.5 flex items-center gap-2">
         <TabsList className="h-8 p-0.5">

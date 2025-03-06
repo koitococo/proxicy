@@ -19,20 +19,20 @@ export const columns: ColumnDef<ApiKey>[] = [
     cell: ({ row }) => <ApiKeyCopyButton apiKey={row.original.key} revoked={row.original.revoked} />,
   },
   {
-    accessorKey: 'created_at',
+    accessorKey: 'createdAt',
     header: 'Created At',
     cell: ({ row }) => {
-      return <div>{format(row.original.created_at, 'yyyy-MM-dd')}</div>
+      return <div>{format(row.original.createdAt, 'yyyy-MM-dd')}</div>
     },
   },
   {
-    accessorKey: 'expires_at',
+    accessorKey: 'expiresAt',
     header: 'Expires At',
     cell: ({ row }) => {
-      if (!row.original.expires_at) {
+      if (!row.original.expiresAt) {
         return <div>Never</div>
       }
-      return <div>{format(row.original.expires_at, 'yyyy-MM-dd')}</div>
+      return <div>{format(row.original.expiresAt, 'yyyy-MM-dd')}</div>
     },
   },
   {
