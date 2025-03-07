@@ -1,5 +1,5 @@
 import { Link, useMatchRoute } from '@tanstack/react-router'
-import { ArrowUpDownIcon, ChartPieIcon, LayoutGridIcon, PackageIcon, WaypointsIcon } from 'lucide-react'
+import { ArrowUpDownIcon, LayoutGridIcon, PackageIcon, WaypointsIcon } from 'lucide-react'
 
 import {
   Sidebar,
@@ -14,10 +14,15 @@ import {
 } from '@/components/ui/sidebar'
 
 const navItems = [
+  // {
+  //   icon: <ChartPieIcon />,
+  //   title: 'Overview',
+  //   href: '/',
+  // },
   {
-    icon: <ChartPieIcon />,
-    title: 'Overview',
-    href: '/',
+    icon: <ArrowUpDownIcon />,
+    title: 'Requests',
+    href: '/requests',
   },
   {
     icon: <LayoutGridIcon />,
@@ -28,11 +33,6 @@ const navItems = [
     icon: <PackageIcon />,
     title: 'Providers',
     href: '/providers',
-  },
-  {
-    icon: <ArrowUpDownIcon />,
-    title: 'Requests',
-    href: '/requests',
   },
 ]
 
