@@ -27,6 +27,8 @@ export type Upstream = typeof schema.UpstreamTable.$inferSelect;
 export type UpstreamInsert = typeof schema.UpstreamTable.$inferInsert;
 export type Completion = typeof schema.CompletionsTable.$inferSelect;
 export type CompletionInsert = typeof schema.CompletionsTable.$inferInsert;
+export type SrvLog = typeof schema.SrvLogsTable.$inferSelect;
+export type SrvLogInsert = typeof schema.SrvLogsTable.$inferInsert;
 
 export type PartialList<T> = {
   data: T[];
@@ -236,5 +238,91 @@ export async function findCompletion(id: number): Promise<Completion | null> {
     .select()
     .from(schema.CompletionsTable)
     .where(and(eq(schema.CompletionsTable.id, id), not(schema.CompletionsTable.deleted)));
+  return r.length === 1 ? r[0] : null;
+}
+
+/**
+ * list logs in database, latest first
+ * @param offset offset from first record
+ * @param limit number of records to return
+ * @param apiKeyId optional, filter by api key id
+ * @param upstreamId optional, filter by upstream id
+ * @param completionId optional, filter by completion id
+ * @returns list of logs
+ */
+export async function listLogs(
+  offset: number,
+  limit: number,
+  apiKeyId?: number,
+  upstreamId?: number,
+  completionId?: number,
+): Promise<PartialList<SrvLog>> {
+  logger.debug("listLogs", offset, limit, apiKeyId, upstreamId, completionId);
+  const sq = db
+    .select({ id: schema.SrvLogsTable.id })
+    .from(schema.SrvLogsTable)
+    .where(
+      and(
+        apiKeyId !== undefined ? eq(schema.SrvLogsTable.relatedApiKeyId, apiKeyId) : undefined,
+        upstreamId !== undefined ? eq(schema.SrvLogsTable.relatedCompletionId, upstreamId) : undefined,
+        completionId !== undefined ? eq(schema.SrvLogsTable.relatedCompletionId, completionId) : undefined,
+      ),
+    )
+    .orderBy(desc(schema.SrvLogsTable.id))
+    .offset(offset)
+    .limit(limit)
+    .as("sq");
+  const r = await db
+    .select()
+    .from(schema.SrvLogsTable)
+    .innerJoin(sq, eq(schema.SrvLogsTable.id, sq.id))
+    .orderBy(desc(schema.SrvLogsTable.id));
+  const total = await db
+    .select({
+      total: count(schema.SrvLogsTable.id),
+    })
+    .from(schema.SrvLogsTable);
+  if (total.length !== 1) {
+    throw new Error("total count failed");
+  }
+  return {
+    data: r.map((x) => x.srv_logs),
+    total: total[0].total,
+    from: offset,
+  };
+}
+
+/**
+ *
+ * @param c log to insert
+ * @returns db record of log, null if already exists
+ */
+export async function insertLog(c: SrvLogInsert): Promise<SrvLog | null> {
+  logger.debug("insertLog");
+  const r = await db.insert(schema.SrvLogsTable).values(c).onConflictDoNothing().returning();
+  return r.length === 1 ? r[0] : null;
+}
+
+/**
+ * get single log record
+ * @param logId log id
+ * @returns single log record, with related api key, upstream, and completion
+ */
+export async function getLog(
+  logId: number,
+): Promise<{ log: SrvLog; upstream: Upstream | null; apiKey: ApiKey | null; completion: Completion | null } | null> {
+  logger.debug("getLog", logId);
+  const r = await db
+    .select({
+      log: schema.SrvLogsTable,
+      apiKey: schema.ApiKeysTable,
+      upstream: schema.UpstreamTable,
+      completion: schema.CompletionsTable,
+    })
+    .from(schema.SrvLogsTable)
+    .leftJoin(schema.ApiKeysTable, eq(schema.SrvLogsTable.relatedApiKeyId, schema.ApiKeysTable.id))
+    .leftJoin(schema.UpstreamTable, eq(schema.SrvLogsTable.relatedUpstreamId, schema.UpstreamTable.id))
+    .leftJoin(schema.CompletionsTable, eq(schema.SrvLogsTable.relatedCompletionId, schema.CompletionsTable.id))
+    .where(eq(schema.SrvLogsTable.id, logId));
   return r.length === 1 ? r[0] : null;
 }
