@@ -7,6 +7,7 @@ import {
   AppSidebarSeparator,
   AppSidebarTrigger,
 } from '@/components/app/app-header'
+import { FilterResetButton } from '@/pages/requests/filter-reset-button'
 import { RequestsRefreshButton } from '@/pages/requests/refresh-button'
 
 export const Route = createFileRoute('/requests')({
@@ -22,6 +23,7 @@ function RouteComponent() {
           <AppSidebarSeparator />
           <AppHeaderTitle>Requests</AppHeaderTitle>
           <RequestsRefreshButton />
+          <FilterResetButton />
         </AppHeaderPart>
       </AppHeader>
       <Outlet />

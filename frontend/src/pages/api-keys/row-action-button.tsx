@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CopyIcon, MoreHorizontalIcon, OctagonXIcon } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
+import { ArrowUpDownIcon, CopyIcon, MoreHorizontalIcon, OctagonXIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCopyToClipboard } from 'usehooks-ts'
 
@@ -29,6 +30,7 @@ import type { ApiKey } from './columns'
 
 export const RowActionButton = ({ data }: { data: ApiKey }) => {
   const [, copy] = useCopyToClipboard()
+  const navigate = useNavigate()
 
   const queryClient = useQueryClient()
   const { mutate } = useMutation({
@@ -88,6 +90,10 @@ export const RowActionButton = ({ data }: { data: ApiKey }) => {
           >
             <CopyIcon />
             Copy API Key
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate({ to: '/requests', search: { apiKeyId: data.id } })}>
+            <ArrowUpDownIcon />
+            View requests
           </DropdownMenuItem>
           {!data.revoked && (
             <>

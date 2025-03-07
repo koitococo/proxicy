@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
+import { ArrowUpDownIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { api } from '@/lib/api'
@@ -16,11 +17,19 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 import type { Upstream } from './columns'
 
 export function RowActionButton({ data }: { data: Upstream }) {
+  const navigate = useNavigate()
+
   const queryClient = useQueryClient()
   const { mutate } = useMutation({
     mutationFn: async (id: number) => {
@@ -59,6 +68,11 @@ export function RowActionButton({ data }: { data: Upstream }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => navigate({ to: '/requests', search: { upstreamId: data.id } })}>
+            <ArrowUpDownIcon />
+            View requests
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <AlertDialogTrigger asChild>
             <DropdownMenuItem>
               <Trash2Icon />
