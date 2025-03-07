@@ -41,7 +41,7 @@ function ApiKeysViewOptions({ includeRevoked }: { includeRevoked: boolean }) {
           checked={includeRevoked}
           onCheckedChange={(v) => {
             navigate({
-              to: '/api-keys',
+              to: '/apps',
               search: { includeRevoked: v },
             })
           }}
