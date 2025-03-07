@@ -264,8 +264,12 @@ export async function listLogs(
     .where(
       and(
         apiKeyId !== undefined ? eq(schema.SrvLogsTable.relatedApiKeyId, apiKeyId) : undefined,
-        upstreamId !== undefined ? eq(schema.SrvLogsTable.relatedCompletionId, upstreamId) : undefined,
-        completionId !== undefined ? eq(schema.SrvLogsTable.relatedCompletionId, completionId) : undefined,
+        upstreamId !== undefined
+          ? eq(schema.SrvLogsTable.relatedCompletionId, upstreamId)
+          : undefined,
+        completionId !== undefined
+          ? eq(schema.SrvLogsTable.relatedCompletionId, completionId)
+          : undefined,
       ),
     )
     .orderBy(desc(schema.SrvLogsTable.id))
@@ -308,9 +312,12 @@ export async function insertLog(c: SrvLogInsert): Promise<SrvLog | null> {
  * @param logId log id
  * @returns single log record, with related api key, upstream, and completion
  */
-export async function getLog(
-  logId: number,
-): Promise<{ log: SrvLog; upstream: Upstream | null; apiKey: ApiKey | null; completion: Completion | null } | null> {
+export async function getLog(logId: number): Promise<{
+  log: SrvLog;
+  upstream: Upstream | null;
+  apiKey: ApiKey | null;
+  completion: Completion | null;
+} | null> {
   logger.debug("getLog", logId);
   const r = await db
     .select({
@@ -321,8 +328,14 @@ export async function getLog(
     })
     .from(schema.SrvLogsTable)
     .leftJoin(schema.ApiKeysTable, eq(schema.SrvLogsTable.relatedApiKeyId, schema.ApiKeysTable.id))
-    .leftJoin(schema.UpstreamTable, eq(schema.SrvLogsTable.relatedUpstreamId, schema.UpstreamTable.id))
-    .leftJoin(schema.CompletionsTable, eq(schema.SrvLogsTable.relatedCompletionId, schema.CompletionsTable.id))
+    .leftJoin(
+      schema.UpstreamTable,
+      eq(schema.SrvLogsTable.relatedUpstreamId, schema.UpstreamTable.id),
+    )
+    .leftJoin(
+      schema.CompletionsTable,
+      eq(schema.SrvLogsTable.relatedCompletionId, schema.CompletionsTable.id),
+    )
     .where(eq(schema.SrvLogsTable.id, logId));
   return r.length === 1 ? r[0] : null;
 }

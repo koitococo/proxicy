@@ -58,7 +58,11 @@ export type CompletionsCompletionType = {
   content?: string;
 }[];
 
-export const CompletionsStatusEnum = pgEnum("completions_status", ["pending", "completed", "failed"]);
+export const CompletionsStatusEnum = pgEnum("completions_status", [
+  "pending",
+  "completed",
+  "failed",
+]);
 export type CompletionsStatusEnumType = "pending" | "completed" | "failed";
 
 export const CompletionsTable = pgTable("completions", {
@@ -88,7 +92,9 @@ export const SrvLogsTable = pgTable("srv_logs", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity().unique(),
   relatedApiKeyId: integer("related_api_key_id").references((): AnyPgColumn => ApiKeysTable.id),
   relatedUpstreamId: integer("related_upstream_id").references((): AnyPgColumn => UpstreamTable.id),
-  relatedCompletionId: integer("related_completion_id").references((): AnyPgColumn => CompletionsTable.id),
+  relatedCompletionId: integer("related_completion_id").references(
+    (): AnyPgColumn => CompletionsTable.id,
+  ),
   message: varchar("message").notNull(),
   level: SrvLogsLevelEnum("level").notNull(),
   details: jsonb("details"),

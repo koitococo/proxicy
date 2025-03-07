@@ -18,6 +18,8 @@ export const routes = new Elysia({
         .use(adminUpstream)
         .use(adminCompletions)
         .use(adminUsage)
-        .get("/", () => true, { detail: { description: "Check whether the admin secret is valid." } }),
+        .get("/", () => true, {
+          detail: { description: "Check whether the admin secret is valid." },
+        }),
     ),
   );

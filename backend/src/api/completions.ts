@@ -52,7 +52,9 @@ export const completionsApi = new Elysia({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(upstream.apiKey === null ? undefined : { Authorization: `Bearer ${upstream.apiKey}` }),
+          ...(upstream.apiKey === null
+            ? undefined
+            : { Authorization: `Bearer ${upstream.apiKey}` }),
         },
       };
 

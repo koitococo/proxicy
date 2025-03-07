@@ -1,5 +1,9 @@
 import { findApiKey, insertCompletion } from "@/db";
-import type { CompletionsCompletionType, CompletionsPromptType, CompletionsStatusEnumType } from "@/db/schema";
+import type {
+  CompletionsCompletionType,
+  CompletionsPromptType,
+  CompletionsStatusEnumType,
+} from "@/db/schema";
 
 export type Completion = {
   model: string;

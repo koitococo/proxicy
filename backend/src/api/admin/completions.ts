@@ -5,7 +5,12 @@ export const adminCompletions = new Elysia()
   .get(
     "/completions",
     async ({ query }) => {
-      return await listCompletions(query.offset ?? 0, query.limit ?? 100, query.apiKeyId, query.upstreamId);
+      return await listCompletions(
+        query.offset ?? 0,
+        query.limit ?? 100,
+        query.apiKeyId,
+        query.upstreamId,
+      );
     },
     {
       query: t.Object({
