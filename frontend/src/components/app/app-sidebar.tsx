@@ -55,7 +55,7 @@ export function AppSidebar() {
                   <WaypointsIcon className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Proxicy</span>
+                  <span className="truncate font-semibold">NexusGate</span>
                   <span className="truncate text-xs">LLM Gateway</span>
                 </div>
               </Link>

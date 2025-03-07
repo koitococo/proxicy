@@ -1,5 +1,4 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { ThemeProvider } from 'next-themes'
 
 import { AppSidebar } from '@/components/app/app-sidebar'
@@ -21,10 +20,6 @@ function Root() {
           <AuthDialog />
         </SidebarInset>
         <Toaster />
-        <TanStackRouterDevtools
-          toggleButtonProps={{ className: '*:not-first:hidden !opacity-0 hover:!opacity-100' }}
-          position="bottom-left"
-        />
       </SidebarProvider>
     </ThemeProvider>
   )

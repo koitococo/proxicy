@@ -1,5 +1,5 @@
 {
-  "name": "proxicy-ts",
+  "name": "nexus-gate-server",
   "module": "./src/index.ts",
   "main": "./src/index.ts",
   "type": "module",

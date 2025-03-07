@@ -1,5 +1,5 @@
 {
-  "name": "proxicy",
+  "name": "nexus-gate",
   "private": true,
   "workspaces": [
     "backend",

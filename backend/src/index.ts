@@ -29,7 +29,7 @@ const app = new Elysia()
           },
         },
         info: {
-          title: "Proxicy API Documentation",
+          title: "NexusGate API Documentation",
           version: "0.0.1",
         },
       },
