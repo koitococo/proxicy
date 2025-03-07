@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 import type { ChatCompletionChunk, ChatCompletion } from "openai/resources";
 
 import { apiKeyPlugin } from "../plugins/apiKeyPlugin";
-import { addCompletions } from "../utils/completions";
+import { addCompletions, type Completion } from "../utils/completions";
 import { parseSse } from "../utils/sse";
 import { consola } from "consola";
 import { selectUpstream } from "@/utils/upstream";
@@ -46,24 +46,37 @@ export const completionsApi = new Elysia({
       if (!upstream) {
         return error(404, "Model not found");
       }
-      const upstreamName = upstream.name;
       const upstreamEndpoint = `${upstream.url}/chat/completions`;
-      const upstreamAuth = upstream.apiKey ? `Bearer ${upstream.apiKey}` : undefined;
-
-      const cleanedMessages = body.messages.map((u) => {
-        const m = u as { role: string; content: string };
-        return {
-          role: m.role as string,
-          content: m.content as string,
-        };
-      });
 
       const reqInit: RequestInit = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(upstreamAuth ? { Authorization: upstreamAuth } : {}),
+          ...(upstream.apiKey === null
+            ? undefined
+            : { Authorization: `Bearer ${upstream.apiKey}` }),
         },
+      };
+
+      const completion: Completion = {
+        model: body.model,
+        upstreamId: upstream.id,
+        prompt: {
+          messages: body.messages.map((u) => {
+            const m = u as { role: string; content: string };
+            return {
+              role: m.role as string,
+              content: m.content as string,
+            };
+          }),
+          n: body.n,
+        },
+        promptTokens: -1,
+        completion: [],
+        completionTokens: -1,
+        status: "pending",
+        ttft: -1,
+        duration: -1,
       };
 
       switch (!!body.stream) {
@@ -77,7 +90,7 @@ export const completionsApi = new Elysia({
             body: JSON.stringify(body),
             ...reqInit,
           }).catch((err) => {
-            logger.error("upstream error", err);
+            logger.error("fetch error", err);
             return undefined;
           });
           if (!resp) {
@@ -85,23 +98,8 @@ export const completionsApi = new Elysia({
               status: 500,
               msg: "Failed to fetch upstream",
             });
-            addCompletions(
-              {
-                model: body.model,
-                upstreamId: upstream.id,
-                prompt: {
-                  messages: cleanedMessages,
-                  n: body.n,
-                },
-                promptTokens: -1,
-                completion: [],
-                completionTokens: -1,
-                status: "failed",
-                ttft: -1,
-                duration: -1,
-              },
-              bearer,
-            );
+            completion.status = "failed";
+            addCompletions(completion, bearer);
             return error(500, "Failed to fetch upstream");
           }
           if (!resp.ok) {
@@ -110,45 +108,23 @@ export const completionsApi = new Elysia({
               status: resp.status,
               msg,
             });
-            addCompletions({
-              model: body.model,
-              upstreamId: upstream.id,
-              prompt: {
-                messages: cleanedMessages,
-                n: body.n,
-              },
-              promptTokens: -1,
-              completion: [],
-              completionTokens: -1,
-              status: "failed",
-              ttft: -1,
-              duration: -1,
-            });
+            completion.status = "failed";
+            addCompletions(completion, bearer);
             return error(resp.status, msg);
           }
           const respText = await resp.text();
           const respJson = JSON.parse(respText) as ChatCompletion;
 
-          addCompletions(
-            {
-              model: body.model,
-              upstreamId: upstream.id,
-              prompt: {
-                messages: cleanedMessages,
-                n: body.n,
-              },
-              promptTokens: respJson.usage?.prompt_tokens ?? -1,
-              completion: respJson.choices.map((c) => ({
-                role: c.message.role as string,
-                content: c.message.content ?? undefined,
-              })),
-              completionTokens: respJson.usage?.completion_tokens ?? -1,
-              status: "completed",
-              ttft: Date.now() - begin,
-              duration: Date.now() - begin,
-            },
-            bearer,
-          );
+          completion.promptTokens = respJson.usage?.prompt_tokens ?? -1;
+          completion.completionTokens = respJson.usage?.completion_tokens ?? -1;
+          completion.status = "completed";
+          completion.ttft = Date.now() - begin;
+          completion.duration = Date.now() - begin;
+          completion.completion = respJson.choices.map((c) => ({
+            role: c.message.role as string,
+            content: c.message.content ?? undefined,
+          }));
+          addCompletions(completion, bearer);
 
           return respText;
         }
@@ -181,23 +157,7 @@ export const completionsApi = new Elysia({
               status: 500,
               msg: "Failed to fetch upstream",
             });
-            addCompletions(
-              {
-                model: body.model,
-                upstreamId: upstream.id,
-                prompt: {
-                  messages: cleanedMessages,
-                  n: body.n,
-                },
-                promptTokens: -1,
-                completion: [],
-                completionTokens: -1,
-                status: "failed",
-                ttft: -1,
-                duration: -1,
-              },
-              bearer,
-            );
+            addCompletions(completion, bearer);
             return error(500, "Failed to fetch upstream");
           }
           if (!resp.ok) {
@@ -206,20 +166,7 @@ export const completionsApi = new Elysia({
               status: resp.status,
               msg,
             });
-            addCompletions({
-              model: body.model,
-              upstreamId: upstream.id,
-              prompt: {
-                messages: cleanedMessages,
-                n: body.n,
-              },
-              promptTokens: -1,
-              completion: [],
-              completionTokens: -1,
-              status: "failed",
-              ttft: -1,
-              duration: -1,
-            });
+            addCompletions(completion, bearer);
             return error(resp.status, msg);
           }
           if (!resp.body) {
@@ -227,20 +174,7 @@ export const completionsApi = new Elysia({
               status: resp.status,
               msg: "No body",
             });
-            addCompletions({
-              model: body.model,
-              upstreamId: upstream.id,
-              prompt: {
-                messages: cleanedMessages,
-                n: body.n,
-              },
-              promptTokens: -1,
-              completion: [],
-              completionTokens: -1,
-              status: "failed",
-              ttft: -1,
-              duration: -1,
-            });
+            addCompletions(completion, bearer);
             return error(500, "No body");
           }
 
@@ -259,23 +193,11 @@ export const completionsApi = new Elysia({
               // Workaround: In most cases, upstream will return a message that is a valid json, and has length of choices = 0,
               //   which will be handled in below. However, in some cases, the last message is '[DONE]', and no usage is returned.
               //   In this case, we will end this completion.
-              addCompletions(
-                {
-                  model: body.model,
-                  upstreamId: upstream.id,
-                  prompt: {
-                    messages: cleanedMessages,
-                    n: body.n,
-                  },
-                  promptTokens: -1,
-                  completion: [{ role: undefined, content: partials.join("") }], // Stream API does not provide role
-                  completionTokens: -1,
-                  status: "completed",
-                  ttft,
-                  duration: Date.now() - begin,
-                },
-                bearer,
-              );
+              completion.completion = [{ role: undefined, content: partials.join("") }];
+              completion.status = "completed";
+              completion.ttft = ttft;
+              completion.duration = Date.now() - begin;
+              addCompletions(completion, bearer);
               yield `data: ${chunk}\n\n`;
               break;
             }
@@ -305,23 +227,13 @@ export const completionsApi = new Elysia({
             }
             if (data.choices.length === 0) {
               // Assuse that is the last chunk
-              addCompletions(
-                {
-                  model: data.model,
-                  upstreamId: upstream.id,
-                  prompt: {
-                    messages: cleanedMessages,
-                    n: body.n,
-                  },
-                  promptTokens: (data.usage ?? undefined)?.prompt_tokens ?? -1,
-                  completion: [{ role: undefined, content: partials.join("") }], // Stream API does not provide role
-                  completionTokens: (data.usage ?? undefined)?.completion_tokens ?? -1,
-                  status: "completed",
-                  ttft,
-                  duration: Date.now() - begin,
-                },
-                bearer,
-              );
+              completion.promptTokens = data.usage?.prompt_tokens ?? -1;
+              completion.completionTokens = data.usage?.completion_tokens ?? -1;
+              completion.completion = [{ role: undefined, content: partials.join("") }];
+              completion.status = "completed";
+              completion.ttft = ttft;
+              completion.duration = Date.now() - begin;
+              addCompletions(completion, bearer);
               yield `data: ${chunk}\n\n`;
               break;
             }
