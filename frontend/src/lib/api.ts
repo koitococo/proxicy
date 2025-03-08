@@ -9,4 +9,4 @@ export const api = treaty<App>(import.meta.env.VITE_BASE_URL, {
       authorization: `Bearer ${JSON.parse(adminSecret)}`,
     }
   },
-})
+}).api
